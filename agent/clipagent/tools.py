@@ -235,9 +235,19 @@ def render_and_check(args: dict, ctx: ToolContext) -> dict:
     out.parent.mkdir(parents=True, exist_ok=True)
     # One filter_complex rather than N inputs: each shot becomes a solid clip of
     # its own duration, concatenated in order, so the duration check is real.
+    # Frame counts come from cumulative time, not per-shot seconds: rounding
+    # every shot independently (0.375 s at 12 fps = 4.5 frames) adds up to a
+    # second of drift across 40 shots, which is a renderer bug, not a case.
+    boundaries = [0]
+    elapsed = 0.0
+    for shot in shots:
+        elapsed += float(shot['seconds'])
+        boundaries.append(round(elapsed * ctx.fps))
+    frame_counts = [max(1, boundaries[i + 1] - boundaries[i])
+                    for i in range(len(shots))]
     graph = ';'.join(f'color=c=0x{(0x203040 + i * 0x101010) % 0xffffff:06x}:'
-                     f's={ctx.width}x{ctx.height}:d={float(s["seconds"]):.3f}:'
-                     f'r={ctx.fps}[v{i}]' for i, s in enumerate(shots))
+                     f's={ctx.width}x{ctx.height}:d={frame_counts[i] / ctx.fps:.6f}:'
+                     f'r={ctx.fps}[v{i}]' for i in range(len(shots)))
     graph += ';' + ''.join(f'[v{i}]' for i in range(len(shots)))
     graph += f'concat=n={len(shots)}:v=1:a=0[out]'
     args_ffmpeg = [ctx.ffmpeg, '-hide_banner', '-loglevel', 'error', '-y',

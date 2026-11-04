@@ -36,7 +36,7 @@ jobs:
           cd agent
           pip install -e .
           pip install -e '.[langchain]'
-      - name: Unit tests (37)
+      - name: Unit tests (54)
         run: cd agent && python -m unittest discover -s tests -v
       - name: Demo pipeline against scripted model
         run: |
@@ -69,7 +69,7 @@ jobs:
         run: |
           pip install -e agent
           pip install -e bench
-      - name: Unit tests (34)
+      - name: Unit tests (60)
         run: cd bench && python -m unittest discover -s tests -v
       - name: Run the shipped case set end to end
         run: |
@@ -79,19 +79,27 @@ jobs:
           import json, pathlib, sys
           data = json.loads(pathlib.Path('/tmp/bench-out/results.json').read_text(encoding='utf-8'))
           s = data['summary']
-          print('summary:', {k: s[k] for k in ('cases', 'passed', 'success_rate', 'quality_mean')})
+          print('summary:', {k: s[k] for k in
+                             ('cases', 'passed', 'known_failure_cases',
+                              'success_rate', 'success_rate_core', 'quality_mean')})
           failures = [(c['case_id'], c['status'],
                        [x['name'] for x in c['checks'] if not x['ok']])
                       for c in data['cases'] if not c['passed']]
           for case_id, status, checks in failures:
               print('  FAILED', case_id, status, checks)
           problems = []
-          if s['cases'] != 8:
-              problems.append(f"expected 8 cases, got {s['cases']}")
-          if s['success_rate'] < 0.875:
-              problems.append(f"success_rate {s['success_rate']} < 0.875")
+          if s['cases'] != 25:
+              problems.append(f"expected 25 cases, got {s['cases']}")
+          if s['known_failure_cases'] != 6:
+              problems.append(f"expected 6 known-failure cases, got {s['known_failure_cases']}")
+          # The scripted policy must satisfy every ordinary case; the six
+          # known-failure cases must fail, and they stay in the headline rate.
+          if s['success_rate_core'] != 1.0:
+              problems.append(f"ordinary-case success_rate {s['success_rate_core']} != 1.0")
+          if s['passed'] != 19:
+              problems.append(f"expected 19 passes, got {s['passed']}")
           if s['quality_mean'] is not None:
-              problems.append('quality must stay unscored without rubrics')
+              problems.append('quality must stay unscored until a judge has run')
           if not pathlib.Path('/tmp/bench-out/attribution.md').is_file():
               problems.append('attribution.md was not written')
           if problems:

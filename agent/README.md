@@ -85,8 +85,24 @@ tool functions with `**kwargs` made the framework advertise a single parameter
 named `kwargs`, so a model would never have learned the real argument names. That
 is the reason the check compares parameter surfaces and not just tool names.
 
+## Retrieval without training anything
+
+`clipagent/rag.py` answers "which source supports this sentence" without an
+embedding service. Documents are tokenised into CJK bigrams (whole words for
+Latin text), scored by BM25 (k1=1.5, b=0.75), combined with a hashed feature
+vector (512 dimensions, blake2b sign trick, cosine) and a phrase-containment
+bonus, then filtered by `MIN_COSINE`. Every hit carries its source id, and
+`assert_cited()` refuses a sentence whose citation is not among the retrieved
+ids.
+
+The method string returned with results says what it is: a lexical/feature
+baseline, not a trained embedding. It is cheap, offline and inspectable; it is
+not a claim to beat a real embedding model. 17 tests cover tokenisation,
+ranking, the single-character query edge case, hash collisions below the cosine
+floor, and citation enforcement.
+
 ## What this is not
 
-No fine-tuning, no vector store (M6 adds retrieval separately), no multi-agent
-delegation. The benchmark set and the judge live in later milestones; this module
-only has to make a run reproducible, inspectable and cheap to repeat.
+No fine-tuning, no multi-agent delegation. The judge and the benchmark live in
+`bench/`; this module only has to make a run reproducible, inspectable and cheap
+to repeat.

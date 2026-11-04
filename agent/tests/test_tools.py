@@ -122,6 +122,20 @@ class RenderTests(unittest.TestCase):
         self.assertTrue(checks['resolution_ok'])
         self.assertTrue(checks['duration_ok'])
 
+    def test_fractional_shots_do_not_accumulate_frame_drift(self):
+        """40 shots of 0.375 s at 12 fps is 4.5 frames each.
+
+        Rounding each shot on its own yields 5 frames * 40 = 16.7 s for a 15 s
+        brief. Cumulative boundaries keep the total exact.
+        """
+        ctx = ToolContext(Path(tempfile.mkdtemp()), width=160, height=90, fps=12)
+        if not ctx.ffmpeg:
+            self.skipTest('ffmpeg not installed')
+        shots = [{'index': i, 'seconds': 0.375} for i in range(40)]
+        out = render_and_check({'shots': shots}, ctx)
+        self.assertEqual(out['status'], 'ok', out)
+        self.assertTrue(out['checks']['duration_ok'], out['checks'])
+
     def test_missing_ffmpeg_is_unavailable_not_fake_success(self):
         ctx = ToolContext(Path(tempfile.mkdtemp()))
         ctx.ffmpeg = None

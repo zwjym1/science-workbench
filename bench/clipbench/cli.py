@@ -51,8 +51,10 @@ def cmd_run(args) -> int:
                     force=args.force)
     runs = runner.run_all(cases, progress=not args.quiet)
 
+    from .judge import PROMPT_SHA
     meta = {'label': args.label,
             'model': policy.LABEL if args.client == 'scripted' else args.model_hint,
+            'judge_prompt_sha': PROMPT_SHA,
             'case_file': str(args.cases), 'workdir': str(Path(args.workdir).resolve())}
     out = Path(args.out)
     write_json(out / 'results.json', runs, meta)
@@ -93,6 +95,65 @@ def cmd_attribute(args) -> int:
     return 0
 
 
+def cmd_label_sheet(args) -> int:
+    """Emit a sheet with both columns empty; only a human fills 'human'."""
+    from .case import load_cases
+    from .judge import JUDGE_PROMPT, PROMPT_SHA, label_sheet
+
+    cases = load_cases(Path(args.cases))
+    ids = [c.id for c in cases]
+    label_sheet(ids, args.out)
+    print(f'wrote {args.out} with {len(ids)} rows (human_score_1to5 left blank)')
+    print(f'judge prompt sha256: {PROMPT_SHA}')
+    if args.print_prompt:
+        print('\n--- frozen judge prompt ---\n' + JUDGE_PROMPT)
+    return 0
+
+
+def cmd_calibrate(args) -> int:
+    """Agreement between a human sheet and judge scores, from one CSV.
+
+    The sheet has case_id, human_score_1to5, judge_score_1to5. The judge column
+    must come from a real judge run; this command only measures agreement and
+    never fills either column itself.
+    """
+    import csv
+    from .judge import calibrate
+
+    human: dict[str, int] = {}
+    judge: dict[str, int] = {}
+    with Path(args.sheet).open(encoding='utf-8', newline='') as handle:
+        for row in csv.DictReader(handle):
+            cid = (row.get('case_id') or '').strip()
+            if not cid:
+                continue
+            if (row.get('human_score_1to5') or '').strip():
+                human[cid] = round(float(row['human_score_1to5']))
+            if (row.get('judge_score_1to5') or '').strip():
+                judge[cid] = round(float(row['judge_score_1to5']))
+    if not human or not judge:
+        print('need at least one human row and one judge row', file=sys.stderr)
+        return 2
+    report = calibrate(human, judge)
+    lines = [f'# Judge calibration', '',
+             f'- cases compared: {report.n}',
+             f'- verdict: **{report.verdict}** (needs n >= 10 to be meaningful)',
+             f"- Cohen's kappa (nominal): {report.kappa_nominal}",
+             f'- quadratic weighted kappa: {report.kappa_quadratic}',
+             f'- mean absolute error: {report.mean_absolute_error}', '',
+             'Disagreements say where the rubric is ambiguous; revise the rubric,',
+             're-score, and keep both sheets rather than editing history.',
+             '']
+    for item in report.disagreements:
+        lines.append(f"- {item['case_id']}: human {item['human']} / judge {item['judge']}")
+    text = '\n'.join(lines)
+    print(text)
+    if args.out:
+        Path(args.out).write_text(text, encoding='utf-8')
+        print(f'\nwrote {args.out}')
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog='clipbench', description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
@@ -121,6 +182,18 @@ def main(argv: list[str] | None = None) -> int:
     attr.add_argument('--out', default='')
     attr.add_argument('--examples', type=int, default=3)
     attr.set_defaults(func=cmd_attribute)
+
+    sheet = sub.add_parser('label-sheet', help='emit a blank human/judge score sheet')
+    sheet.add_argument('--cases', default=str(DEFAULT_CASES))
+    sheet.add_argument('--out', default='labels.csv')
+    sheet.add_argument('--print-prompt', action='store_true',
+                       help='print the frozen judge prompt and exit')
+    sheet.set_defaults(func=cmd_label_sheet)
+
+    cal = sub.add_parser('calibrate', help='measure human/judge agreement from a sheet')
+    cal.add_argument('sheet')
+    cal.add_argument('--out', default='')
+    cal.set_defaults(func=cmd_calibrate)
 
     args = parser.parse_args(argv)
     return args.func(args)

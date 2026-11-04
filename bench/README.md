@@ -1,56 +1,66 @@
 # clipbench — batch evaluation for clipagent
 
-Eight cases, four metrics, a report you can diff between two versions.
+25 cases, four metrics, a report you can diff between two versions, failure
+attribution from the trace, and a judge whose agreement with a human is measured
+rather than asserted.
 
 ```bash
 pip install -e ../agent -e .
 clipbench run --workdir /tmp/bench-work --out /tmp/bench-out
-python -m unittest discover -s tests          # 22 tests
+python -m unittest discover -s tests          # 61 tests
 ```
 
 ## What a report looks like
 
 ```
 | metric | value |
-| task success rate | 87.5% (7/8) |
-| quality score | not scored (no rubric) |
-| latency p50 / p95 | 0.883s / 0.943s |
-| prompt tokens (estimate) | 27623 |
-| render seconds | 0.37s |
-| tool calls / reused artefacts | 40 / 0 |
+| task success rate | 76.0% (19/25) |
+| task success rate, ordinary cases | 100.0% (19/19) |
+| quality score | not scored (no judge run) |
+| latency p50 / p95 | 0.179s / 0.263s |
+| prompt tokens (estimate) | 77072 |
+| render seconds | 0.016s |
+| tool calls / reused artefacts | 105 / 0 |
 ```
 
-Two deliberate choices in that table:
+Three deliberate choices in that table:
 
-**Quality is `null`, not zero, when no rubric exists.** Averaging unscored cases
-into a quality mean is the standard way a benchmark flatters itself. The report
-says "not scored (no rubric)" until a rubric exists and a judge has scored it.
+**Known failures stay in the headline rate.** Six of the 25 cases are supposed
+to fail (refusal, out-of-range input). Dropping them would turn 76% into 100%
+and hide exactly the adversarial cases the set exists to hold. The second row
+says whether the ordinary pipeline works; the first says how the whole set
+behaved.
+
+**Quality is `null`, not zero, until a judge has run.** Averaging unscored cases
+into a quality mean is the standard way a benchmark flatters itself.
 
 **The model line names what produced the numbers.** With the built-in policy it
 reads `scripted-reference-policy (runner mechanics only; not a model measurement)`.
-That stand-in derives its tool sequence from the case constraints, so it always
-passes by construction; it exists to test the runner, the checks and the reports,
-and pretending otherwise would make the whole table meaningless.
+That stand-in derives its tool sequence from the case constraints; it exists to
+test the runner, the checks and the reports, and pretending it measures a model
+would make the whole table meaningless.
 
 ## Cases
 
-`clipbench/cases/core.json` holds eight cases, each with a task, constraints and
-an optional rubric:
+`clipbench/cases/core.json` holds 25 cases, each with a task, constraints and an
+optional rubric:
 
-| id | what it exercises |
-|---|---|
-| core-01 | baseline: 40 s, 4 shots, cited, rendered |
-| core-02 | lower bound: 15 s, one shot |
-| core-03 | upper bound: 40 shots |
-| core-04 | known failure: no source, so the script tool must refuse |
-| core-05 | asset floor: at least three licensed candidates |
-| core-06 | latency budget: whole run under 45 s |
-| core-07 | picture only, no narration track |
-| core-08 | a rubric skeleton, to show the shape |
+| group | ids | what it exercises |
+|---|---|---|
+| baseline | core-01 | 40 s, 4 shots, cited, rendered |
+| boundaries | core-02, 03, 09, 10 | 15 s / 1 shot, 40 shots, 600 s / 8 shots, 15 s / 40 shots |
+| asset floors, latency, picture-only | core-05, 06, 07 | at least three licensed candidates, run under 45 s, no narration track |
+| science topics | core-08, 13–20, 23, 25 | ordinary briefs across subject matter and lengths |
+| known failures | core-04, 11, 12, 21, 22, 24 | no source to cite, duration below 15 s, 41 shots, missing asset, impossible latency, zero shots |
 
-`core-04` is marked `known_failure: true`. It is expected to fail and is reported
-as `XFAIL` rather than quietly removed — a benchmark that only contains cases it
-passes measures nothing.
+Known failures are marked `known_failure: true` and reported as `XFAIL` rather
+than quietly removed. Their runs are still failures in the metrics; the flag is
+for the reader, not for the arithmetic.
+
+`core-10` is the case that caught a real renderer bug: 40 shots of 0.375 s at
+12 fps is 4.5 frames each, and rounding each clip independently produced
+16.7 s for a 15 s brief. Frame counts are now derived from cumulative
+boundaries, so drift does not accumulate.
 
 ## Constraint checking
 
@@ -98,8 +108,32 @@ Precedence is fixed: `environment` outranks everything downstream of it, because
 a missing ffmpeg explains every error that follows and attributing those to
 planning would send you fixing the wrong layer.
 
+## Judge and calibration
+
+The judge prompt is frozen and hashed; the hash is written into every
+`results.json` as `judge_prompt_sha`:
+
+```bash
+clipbench label-sheet --out labels.csv     # 25 rows, both score columns blank
+clipbench calibrate labels.csv --out calibration.md
+```
+
+`label-sheet` only creates the sheet. The human column is filled by a person;
+the judge column is filled by `judge.LLMJudge` (temperature 0, fixed prompt,
+per-dimension scores with weights) or by `judge.RubricJudge` for harness tests.
+`calibrate` computes Cohen's kappa, quadratic weighted kappa, mean absolute
+error and the disagreements, and refuses to call fewer than ten pairs
+meaningful.
+
+`RubricJudge` is deterministic and useful for testing the plumbing; it is not a
+measurement of narrative quality. A calibration run that used it would agree
+with itself for reasons that have nothing to do with a model, so its scores are
+never presented as judge results in a report.
+
 ## What is still missing
 
-Rubric scoring is the next milestone. Until a human has labelled ten cases and a
-judge has been calibrated against those labels, `quality` stays null and the
-"LLM-as-a-Judge" claim stays unearned.
+The rubric has weights (narrative 0.3, accuracy 0.4, density 0.2, constraint
+0.1) but they are a starting point, not a calibrated scale: they must be revised
+after ten human labels and a real judge run. The four-model comparison needs
+API keys, and until it runs the resume must not claim it.
+

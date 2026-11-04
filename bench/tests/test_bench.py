@@ -20,8 +20,11 @@ class CaseLoadingTests(unittest.TestCase):
     def test_shipped_core_set_loads_with_unique_ids(self):
         cases = load_cases(Path(__file__).resolve().parent.parent
                            / 'clipbench' / 'cases')
-        self.assertGreaterEqual(len(cases), 8)
+        self.assertEqual(len(cases), 25)
         self.assertEqual(len({c.id for c in cases}), len(cases))
+        self.assertGreaterEqual(sum(c.known_failure for c in cases), 5)
+        self.assertTrue(any(c.constraints.get('duration_s', 0) >= 600
+                            for c in cases), 'a max-duration boundary is missing')
 
     def test_unknown_constraint_is_rejected_loudly(self):
         with self.assertRaises(ValueError) as ctx:
@@ -116,6 +119,14 @@ class MetricsTests(unittest.TestCase):
     def test_empty_run_set_does_not_divide_by_zero(self):
         self.assertEqual(summarize([])['success_rate'], 0.0)
 
+    def test_known_failures_stay_in_the_headline_rate(self):
+        runs = [CaseRun('a', 'ok', True),
+                CaseRun('b', 'failed', False, known_failure=True)]
+        summary = summarize(runs)
+        self.assertEqual(summary['known_failure_cases'], 1)
+        self.assertEqual(summary['success_rate'], 0.5)
+        self.assertEqual(summary['success_rate_core'], 1.0)
+
 
 class RunnerTests(unittest.TestCase):
     def setUp(self):
@@ -163,8 +174,15 @@ class RunnerTests(unittest.TestCase):
 class ReportTests(unittest.TestCase):
     def test_markdown_states_that_quality_was_not_scored(self):
         text = render_markdown([CaseRun('a', 'ok', True)], {'label': 'x'})
-        self.assertIn('not scored (no rubric)', text)
+        self.assertIn('not scored (no judge run)', text)
         self.assertIn('character-based estimates', text)
+
+    def test_markdown_separates_known_failures_from_ordinary_cases(self):
+        text = render_markdown([CaseRun('a', 'ok', True),
+                                CaseRun('b', 'failed', False, known_failure=True)],
+                               {'label': 'x'})
+        self.assertIn('task success rate | 50.0% (1/2)', text)
+        self.assertIn('ordinary cases | 100.0% (1/1)', text)
 
     def test_comparison_lists_both_versions(self):
         text = render_comparison([CaseRun('a', 'ok', True)],

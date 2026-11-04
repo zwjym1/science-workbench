@@ -47,11 +47,19 @@ def summarize(runs: list[CaseRun]) -> dict[str, Any]:
     passed = sum(1 for r in runs if r.passed)
     scored = [r.quality for r in runs if r.quality is not None]
     latencies = [r.latency_s for r in runs]
+    # Cases that are *supposed* to fail (refusal / invalid input) stay in the
+    # headline success rate -- leaving them out would flatter the number -- but
+    # a second rate over ordinary cases says whether the pipeline itself works.
+    ordinary = [r for r in runs if not r.known_failure]
+    ordinary_passed = sum(1 for r in ordinary if r.passed)
     returns = {
         'cases': total,
         'passed': passed,
         'failed': total - passed,
+        'known_failure_cases': total - len(ordinary),
         'success_rate': round(passed / total, 4) if total else 0.0,
+        'success_rate_core': (round(ordinary_passed / len(ordinary), 4)
+                              if ordinary else 0.0),
         'quality_mean': round(statistics.fmean(scored), 3) if scored else None,
         'quality_scored_cases': len(scored),
         'quality_unscored_cases': total - len(scored),

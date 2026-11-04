@@ -37,7 +37,11 @@ def render_markdown(runs: list[CaseRun], meta: dict[str, Any]) -> str:
         '| metric | value |',
         '|---|---|',
         f"| task success rate | {_pct(s['success_rate'])} ({s['passed']}/{s['cases']}) |",
-        f"| quality score | {'not scored (no rubric)' if s['quality_mean'] is None else s['quality_mean']} |",
+        (f"| task success rate, ordinary cases | {_pct(s['success_rate_core'])} "
+         f"({s['passed']}/{s['cases'] - s['known_failure_cases']}) |"
+         if s['known_failure_cases'] else
+         '| task success rate, ordinary cases | all cases are ordinary |'),
+        f"| quality score | {'not scored (no judge run)' if s['quality_mean'] is None else s['quality_mean']} |",
         f"| latency p50 / p95 | {s['latency_p50_s']}s / {s['latency_p95_s']}s |",
         f"| latency mean | {s['latency_mean_s']}s |",
         f"| prompt tokens (estimate) | {s['prompt_tokens_estimate']} |",
@@ -55,7 +59,7 @@ def render_markdown(runs: list[CaseRun], meta: dict[str, Any]) -> str:
         lines.append(f"| {run.case_id} | {run.status} | {state} | "
                      f"{run.latency_s}s | {', '.join(run.failed_checks) or '—'} |")
     lines += ['', '> Token counts are character-based estimates; '
-                  'quality is left empty rather than scored when a case has no rubric.', '']
+                  'quality stays empty until a judge has scored the run.', '']
     return '\n'.join(lines)
 
 

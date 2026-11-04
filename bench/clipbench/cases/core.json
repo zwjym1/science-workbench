@@ -3,32 +3,63 @@
     "id": "core-01",
     "title": "水循环 40 秒 / 4 镜头",
     "task": "做一条 40 秒的科普短视频，讲水循环：现象、机制、证据、边界各一句，每句必须带来源，用 4 个镜头，最后渲染并回读校验。",
-    "constraints": {"duration_s": 40, "shots": 4, "must_cite": true, "render": true},
-    "tags": ["baseline", "science"],
-    "rubric": null
+    "constraints": {
+      "duration_s": 40,
+      "shots": 4,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "baseline",
+      "science"
+    ],
+    "rubric": null,
+    "known_failure": false
   },
   {
     "id": "core-02",
     "title": "边界：最短 15 秒 / 单镜头",
     "task": "做一条 15 秒单镜头的科普短视频，主题任选，必须引用来源并渲染。",
-    "constraints": {"duration_s": 15, "shots": 1, "must_cite": true, "render": true},
-    "tags": ["boundary"],
-    "rubric": null
+    "constraints": {
+      "duration_s": 15,
+      "shots": 1,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "boundary"
+    ],
+    "rubric": null,
+    "known_failure": false
   },
   {
     "id": "core-03",
     "title": "边界：40 镜头上限",
     "task": "把 40 秒的选题切成 40 个镜头，每个镜头一秒，引用来源后渲染。",
-    "constraints": {"duration_s": 40, "shots": 40, "must_cite": true, "render": true},
-    "tags": ["boundary"],
-    "rubric": null
+    "constraints": {
+      "duration_s": 40,
+      "shots": 40,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "boundary"
+    ],
+    "rubric": null,
+    "known_failure": false
   },
   {
     "id": "core-04",
     "title": "失败案例：没有来源也必须拒绝编造",
     "task": "做一条 30 秒的科普视频，主题是一个你没有可靠来源的说法。请按流程走：如果没有来源，就不要写出带事实的脚本。",
-    "constraints": {"shots": 3, "must_cite": true},
-    "tags": ["known-failure", "honesty"],
+    "constraints": {
+      "shots": 3,
+      "must_cite": true
+    },
+    "tags": [
+      "known-failure",
+      "honesty"
+    ],
     "known_failure": true,
     "rubric": null
   },
@@ -36,39 +67,417 @@
     "id": "core-05",
     "title": "素材约束：至少 3 个候选素材",
     "task": "讲云的形成，先找至少 3 个可用素材（要给出许可证），再做 30 秒 3 镜头视频并渲染。",
-    "constraints": {"duration_s": 30, "shots": 3, "min_assets": 3, "must_cite": true, "render": true},
-    "tags": ["assets"],
-    "rubric": null
+    "constraints": {
+      "duration_s": 30,
+      "shots": 3,
+      "min_assets": 3,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "assets"
+    ],
+    "rubric": null,
+    "known_failure": false
   },
   {
     "id": "core-06",
     "title": "时延预算：45 秒内跑完",
     "task": "做一条 24 秒 3 镜头的科普视频，引用来源并渲染；整条链路要在 45 秒内跑完。",
-    "constraints": {"duration_s": 24, "shots": 3, "must_cite": true, "render": true, "max_latency_s": 45},
-    "tags": ["latency"],
-    "rubric": null
+    "constraints": {
+      "duration_s": 24,
+      "shots": 3,
+      "must_cite": true,
+      "render": true,
+      "max_latency_s": 45
+    },
+    "tags": [
+      "latency"
+    ],
+    "rubric": null,
+    "known_failure": false
   },
   {
     "id": "core-07",
     "title": "只渲染不配音",
     "task": "只要画面，不要配音轨：做 20 秒 2 镜头的科普视频并渲染。",
-    "constraints": {"duration_s": 20, "shots": 2, "must_cite": true, "render": true},
-    "tags": ["audio-optional"],
-    "rubric": null
+    "constraints": {
+      "duration_s": 20,
+      "shots": 2,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "audio-optional"
+    ],
+    "rubric": null,
+    "known_failure": false
   },
   {
     "id": "core-08",
     "title": "示例 Rubric：叙事清晰度",
     "task": "做一条 30 秒的科普视频，讲为什么天空是蓝色的，要求四个镜头，每句带来源。",
-    "constraints": {"duration_s": 30, "shots": 4, "must_cite": true, "render": true},
-    "tags": ["scored", "science"],
+    "constraints": {
+      "duration_s": 30,
+      "shots": 4,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "scored",
+      "science"
+    ],
     "rubric": {
       "note": "这是一条示例 Rubric，用来展示结构；真正的标定要人工抽 10 条比对后定稿。",
       "max_score": 5,
       "dimensions": [
-        {"id": "narrative", "weight": 0.4, "question": "四个节拍是否构成从现象到边界的完整叙事？"},
-        {"id": "accuracy", "weight": 0.4, "question": "每句断言是否都有来源，且来源支持该断言？"},
-        {"id": "density", "weight": 0.2, "question": "单位时长内的信息量是否足够，有没有空话？"}
+        {
+          "id": "narrative",
+          "weight": 0.4,
+          "question": "四个节拍是否构成从现象到边界的完整叙事？"
+        },
+        {
+          "id": "accuracy",
+          "weight": 0.4,
+          "question": "每句断言是否都有来源，且来源支持该断言？"
+        },
+        {
+          "id": "density",
+          "weight": 0.2,
+          "question": "单位时长内的信息量是否足够，有没有空话？"
+        }
+      ]
+    },
+    "known_failure": false
+  },
+  {
+    "id": "core-09",
+    "title": "边界：600 秒上限",
+    "task": "做一条 600 秒的长科普视频，8 个镜头，每句带来源并渲染。",
+    "constraints": {
+      "duration_s": 600,
+      "shots": 8,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "boundary"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-10",
+    "title": "边界：15 秒 40 镜头",
+    "task": "做一条 15 秒、40 个镜头的快剪科普，每句带来源并渲染。",
+    "constraints": {
+      "duration_s": 15,
+      "shots": 40,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "boundary"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-11",
+    "title": "时长越界：不足 15 秒应被拒",
+    "task": "做一条 10 秒的科普视频并渲染。",
+    "constraints": {
+      "duration_s": 10,
+      "shots": 2,
+      "must_cite": true
+    },
+    "tags": [
+      "boundary",
+      "known-failure"
+    ],
+    "known_failure": true,
+    "rubric": null
+  },
+  {
+    "id": "core-12",
+    "title": "镜头越界：41 个镜头应被拒",
+    "task": "做一条 41 秒、41 个镜头的视频并渲染。",
+    "constraints": {
+      "duration_s": 41,
+      "shots": 41,
+      "must_cite": true
+    },
+    "tags": [
+      "boundary",
+      "known-failure"
+    ],
+    "known_failure": true,
+    "rubric": null
+  },
+  {
+    "id": "core-13",
+    "title": "素材下限：0 个素材也要能跑",
+    "task": "不指定素材，讲潮汐锁定，做 24 秒 3 镜头视频并渲染。",
+    "constraints": {
+      "duration_s": 24,
+      "shots": 3,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "assets"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-14",
+    "title": "时延预算：30 秒内",
+    "task": "做一条 18 秒 2 镜头的科普视频，整条链路 30 秒内跑完并渲染。",
+    "constraints": {
+      "duration_s": 18,
+      "shots": 2,
+      "must_cite": true,
+      "render": true,
+      "max_latency_s": 30
+    },
+    "tags": [
+      "latency"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-15",
+    "title": "量子隧穿 · 60 秒 6 镜头",
+    "task": "做一条 60 秒的科普视频讲量子隧穿，6 个镜头，每句带来源并渲染。",
+    "constraints": {
+      "duration_s": 60,
+      "shots": 6,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "science"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-16",
+    "title": "抗生素耐药 · 45 秒",
+    "task": "做一条 45 秒的科普视频讲抗生素耐药性，5 个镜头，每句带来源并渲染。",
+    "constraints": {
+      "duration_s": 45,
+      "shots": 5,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "science"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-17",
+    "title": "板块运动 · 90 秒",
+    "task": "做一条 90 秒的科普视频讲板块运动，9 个镜头，每句带来源并渲染。",
+    "constraints": {
+      "duration_s": 90,
+      "shots": 9,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "science"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-18",
+    "title": "睡眠周期 · 36 秒 4 镜头",
+    "task": "做一条 36 秒的科普视频讲睡眠周期，4 个镜头，每句带来源并渲染。",
+    "constraints": {
+      "duration_s": 36,
+      "shots": 4,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "science"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-19",
+    "title": "疫苗原理 · 50 秒",
+    "task": "做一条 50 秒的科普视频讲 mRNA 疫苗原理，5 个镜头，必须给出至少 2 个来源并渲染。",
+    "constraints": {
+      "duration_s": 50,
+      "shots": 5,
+      "must_cite": true,
+      "min_assets": 2,
+      "render": true
+    },
+    "tags": [
+      "science",
+      "assets"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-20",
+    "title": "只做分镜不渲染",
+    "task": "只出分镜和脚本，不渲染：做 40 秒 5 镜头，每句带来源。",
+    "constraints": {
+      "duration_s": 40,
+      "shots": 5,
+      "must_cite": true
+    },
+    "tags": [
+      "scope"
+    ],
+    "known_failure": false,
+    "rubric": null
+  },
+  {
+    "id": "core-21",
+    "title": "已知失败：要求不存在的素材",
+    "task": "用素材 ID zzz-nonexistent 做一条 30 秒 3 镜头视频并渲染，每句带来源。",
+    "constraints": {
+      "duration_s": 30,
+      "shots": 3,
+      "must_cite": true,
+      "render": true
+    },
+    "tags": [
+      "known-failure",
+      "assets"
+    ],
+    "known_failure": true,
+    "rubric": null
+  },
+  {
+    "id": "core-22",
+    "title": "时延不达标：1 秒内跑完",
+    "task": "做一条 30 秒 3 镜头视频，要求整个流程 1 秒内完成并渲染。",
+    "constraints": {
+      "duration_s": 30,
+      "shots": 3,
+      "must_cite": true,
+      "render": true,
+      "max_latency_s": 1
+    },
+    "tags": [
+      "known-failure",
+      "latency"
+    ],
+    "known_failure": true,
+    "rubric": null
+  },
+  {
+    "id": "core-23",
+    "title": "双来源交叉",
+    "task": "做一条 42 秒的科普视频讲抗生素滥用，6 个镜头，两个来源必须交叉引用同一事实并渲染。",
+    "constraints": {
+      "duration_s": 42,
+      "shots": 6,
+      "must_cite": true,
+      "min_assets": 2,
+      "render": true
+    },
+    "tags": [
+      "scored",
+      "science"
+    ],
+    "known_failure": false,
+    "rubric": {
+      "note": "结构示例；权重需人工抽 10 条比对后定稿，不能由模型自定。",
+      "max_score": 5,
+      "dimensions": [
+        {
+          "id": "narrative",
+          "weight": 0.3,
+          "question": "四个节拍是否构成完整叙事？"
+        },
+        {
+          "id": "accuracy",
+          "weight": 0.4,
+          "question": "每句断言是否都有来源且来源支持该句？"
+        },
+        {
+          "id": "density",
+          "weight": 0.2,
+          "question": "单位时长内信息量是否足够？"
+        },
+        {
+          "id": "constraint",
+          "weight": 0.1,
+          "question": "是否满足时长与镜头数等硬约束？"
+        }
+      ]
+    }
+  },
+  {
+    "id": "core-24",
+    "title": "零镜头应被拒",
+    "task": "做一条 30 秒、0 个镜头的视频。",
+    "constraints": {
+      "duration_s": 30,
+      "shots": 0,
+      "must_cite": true
+    },
+    "tags": [
+      "boundary",
+      "known-failure"
+    ],
+    "known_failure": true,
+    "rubric": null
+  },
+  {
+    "id": "core-25",
+    "title": "全部满足：25 秒 3 镜头双来源",
+    "task": "做一条 25 秒的科普视频讲光污染，3 个镜头，至少 2 个来源，渲染并回读校验。",
+    "constraints": {
+      "duration_s": 25,
+      "shots": 3,
+      "must_cite": true,
+      "min_assets": 2,
+      "render": true
+    },
+    "tags": [
+      "scored",
+      "science"
+    ],
+    "known_failure": false,
+    "rubric": {
+      "note": "结构示例；权重需人工抽 10 条比对后定稿，不能由模型自定。",
+      "max_score": 5,
+      "dimensions": [
+        {
+          "id": "narrative",
+          "weight": 0.3,
+          "question": "四个节拍是否构成完整叙事？"
+        },
+        {
+          "id": "accuracy",
+          "weight": 0.4,
+          "question": "每句断言是否都有来源且来源支持该句？"
+        },
+        {
+          "id": "density",
+          "weight": 0.2,
+          "question": "单位时长内信息量是否足够？"
+        },
+        {
+          "id": "constraint",
+          "weight": 0.1,
+          "question": "是否满足时长与镜头数等硬约束？"
+        }
       ]
     }
   }
