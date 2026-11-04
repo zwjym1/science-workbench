@@ -7,7 +7,7 @@ rather than asserted.
 ```bash
 pip install -e ../agent -e .
 clipbench run --workdir /tmp/bench-work --out /tmp/bench-out
-python -m unittest discover -s tests          # 63 tests
+python -m unittest discover -s tests          # 64 tests
 ```
 
 ## What a report looks like

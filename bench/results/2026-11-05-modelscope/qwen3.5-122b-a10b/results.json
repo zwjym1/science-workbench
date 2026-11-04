@@ -1,0 +1,1098 @@
+{
+  "generated_at": "2026-11-04T16:32:49.110136+00:00",
+  "meta": {
+    "label": "Qwen/Qwen3.5-122B-A10B",
+    "model": "Qwen/Qwen3.5-122B-A10B",
+    "case_file": "D:\\编程\\项目\\science-workbench\\bench\\clipbench\\cases"
+  },
+  "summary": {
+    "cases": 25,
+    "passed": 9,
+    "failed": 16,
+    "known_failure_cases": 6,
+    "success_rate": 0.36,
+    "success_rate_core": 0.4211,
+    "quality_mean": null,
+    "quality_scored_cases": 0,
+    "quality_unscored_cases": 25,
+    "latency_mean_s": 14.002,
+    "latency_p50_s": 12.304,
+    "latency_p95_s": 44.973,
+    "prompt_tokens_estimate": 63837,
+    "render_seconds": 26.739,
+    "tool_calls": 78,
+    "reused_artifacts": 0,
+    "error_cases": [
+      "core-13",
+      "core-14",
+      "core-15",
+      "core-16",
+      "core-18",
+      "core-22",
+      "core-23",
+      "core-24",
+      "core-25"
+    ],
+    "failed_checks": {
+      "core-01": [
+        "render"
+      ],
+      "core-02": [
+        "render"
+      ],
+      "core-04": [
+        "shots",
+        "must_cite"
+      ],
+      "core-06": [
+        "duration_s"
+      ],
+      "core-08": [
+        "render"
+      ],
+      "core-11": [
+        "duration_s",
+        "shots"
+      ],
+      "core-12": [
+        "shots"
+      ],
+      "core-13": [
+        "duration_s",
+        "shots",
+        "render"
+      ],
+      "core-14": [
+        "duration_s",
+        "shots",
+        "render"
+      ],
+      "core-15": [],
+      "core-16": [
+        "duration_s",
+        "shots",
+        "must_cite",
+        "render"
+      ],
+      "core-18": [
+        "duration_s",
+        "shots",
+        "must_cite",
+        "render"
+      ],
+      "core-22": [
+        "max_latency_s"
+      ],
+      "core-23": [
+        "duration_s",
+        "shots",
+        "must_cite",
+        "min_assets",
+        "render"
+      ],
+      "core-24": [
+        "duration_s",
+        "must_cite"
+      ],
+      "core-25": [
+        "duration_s",
+        "shots",
+        "must_cite",
+        "min_assets",
+        "render"
+      ]
+    }
+  },
+  "cases": [
+    {
+      "case_id": "core-01",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 40.0, got 40.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 4, got 4"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 15.745,
+      "prompt_tokens": 1594,
+      "attempts": 3,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-02",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 15.0, got 15.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 1, got 1"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 7.737,
+      "prompt_tokens": 1426,
+      "attempts": 3,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-03",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 40.0, got 40.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 40, got 40"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 40.0"
+        }
+      ],
+      "latency_s": 45.397,
+      "prompt_tokens": 9784,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 0.001,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-04",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 3, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        }
+      ],
+      "latency_s": 6.235,
+      "prompt_tokens": 412,
+      "attempts": 1,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-05",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "min_assets",
+          "ok": true,
+          "detail": "want >= 3, got 3"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 30.0"
+        }
+      ],
+      "latency_s": 12.304,
+      "prompt_tokens": 2349,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 2.849,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-06",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "want 24.0, got 60.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 60.0"
+        },
+        {
+          "name": "max_latency_s",
+          "ok": true,
+          "detail": "limit 45.0s, took 15.13s"
+        }
+      ],
+      "latency_s": 15.126,
+      "prompt_tokens": 2499,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 5.49,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-07",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 20.0, got 20.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 2, got 2"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 20.0"
+        }
+      ],
+      "latency_s": 14.646,
+      "prompt_tokens": 2167,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 3.469,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-08",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 4, got 4"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 15.882,
+      "prompt_tokens": 2668,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-09",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 600.0, got 600.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 8, got 8"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 600.0"
+        }
+      ],
+      "latency_s": 22.446,
+      "prompt_tokens": 4727,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 3.476,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-10",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 15.0, got 15.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 40, got 40"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 15.0"
+        }
+      ],
+      "latency_s": 44.973,
+      "prompt_tokens": 10183,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 0.001,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-11",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "want 10.0, got 15.0"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 2, got 4"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        }
+      ],
+      "latency_s": 12.208,
+      "prompt_tokens": 2717,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-12",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 41.0, got 41.0"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 41, got 40"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        }
+      ],
+      "latency_s": 29.242,
+      "prompt_tokens": 3236,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-13",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 3, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 5.162,
+      "prompt_tokens": 825,
+      "attempts": 2,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-14",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 2, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        },
+        {
+          "name": "max_latency_s",
+          "ok": true,
+          "detail": "limit 30.0s, took 6.35s"
+        }
+      ],
+      "latency_s": 6.346,
+      "prompt_tokens": 809,
+      "attempts": 2,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-15",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 60.0, got 60.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 6, got 6"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 60.0"
+        }
+      ],
+      "latency_s": 11.428,
+      "prompt_tokens": 2820,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 0.981,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-16",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 5, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 2.901,
+      "prompt_tokens": 382,
+      "attempts": 1,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-17",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 90.0, got 90.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 9, got 9"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 90.0"
+        }
+      ],
+      "latency_s": 20.44,
+      "prompt_tokens": 4783,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 3.569,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-18",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 4, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 3.521,
+      "prompt_tokens": 295,
+      "attempts": 1,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-19",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 50.0, got 50.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 5, got 5"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "min_assets",
+          "ok": true,
+          "detail": "want >= 2, got 3"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 50.0"
+        }
+      ],
+      "latency_s": 15.266,
+      "prompt_tokens": 3754,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 3.027,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-20",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 40.0, got 40.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 5, got 5"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        }
+      ],
+      "latency_s": 12.118,
+      "prompt_tokens": 1524,
+      "attempts": 3,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-21",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 30.0"
+        }
+      ],
+      "latency_s": 18.15,
+      "prompt_tokens": 2305,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 3.75,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-22",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 30.0"
+        },
+        {
+          "name": "max_latency_s",
+          "ok": false,
+          "detail": "limit 1.0s, took 12.41s"
+        }
+      ],
+      "latency_s": 12.413,
+      "prompt_tokens": 2273,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 0.126,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-23",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 6, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        },
+        {
+          "name": "min_assets",
+          "ok": false,
+          "detail": "want >= 2, got 0"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 0.137,
+      "prompt_tokens": 112,
+      "attempts": 0,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-24",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 0, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        }
+      ],
+      "latency_s": 0.11,
+      "prompt_tokens": 86,
+      "attempts": 0,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-25",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 3, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        },
+        {
+          "name": "min_assets",
+          "ok": false,
+          "detail": "want >= 2, got 0"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 0.116,
+      "prompt_tokens": 107,
+      "attempts": 0,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: HTTP Error 429: Too Many Requests",
+      "known_failure": false
+    }
+  ]
+}

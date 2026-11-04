@@ -189,6 +189,23 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue(lines[1].startswith('sc1,,'), lines[1])
         self.assertTrue((out / 'scores.json').is_file())
 
+    def test_rebuild_reads_case_files_back(self):
+        import argparse
+        from clipbench.cli import cmd_rebuild
+        c = case('rb', duration_s=8, shots=2)
+        self._runner().run_all([c], progress=False)
+        cases_dir = Path(tempfile.mkdtemp())
+        (cases_dir / 'one.json').write_text(json.dumps([c.as_dict()]),
+                                            encoding='utf-8')
+        out = self.root / 'rebuilt'
+        code = cmd_rebuild(argparse.Namespace(
+            workdir=str(self.root), out=str(out), cases=str(cases_dir),
+            label='x', model='m'))
+        self.assertEqual(code, 0)
+        payload = json.loads((out / 'results.json').read_text(encoding='utf-8'))
+        self.assertEqual(payload['summary']['cases'], 1)
+        self.assertTrue(payload['meta']['rebuilt'])
+
 
 class ReportTests(unittest.TestCase):
     def test_markdown_states_that_quality_was_not_scored(self):

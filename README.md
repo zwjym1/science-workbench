@@ -22,10 +22,10 @@ Next.js 控制台，以及配套的 unittest/pytest 测试集。
   ffprobe 回读、时延上限）、按 case 断点续跑、两次运行的逐 case 回归对比，以及从 trace
   读出的失败归因（五类：环境 / 参数生成 / 工具选择 / 上下文 / 规划，无法归类时如实标
   unclassified）。另有固定提示词、固定温度的 LLM-as-a-Judge 与人工标注一致性计算
-  （Cohen's kappa、二次加权 kappa），以及同一 case 集上的多模型对比（`matrix`）。**63 项 unittest**。质量分在 judge 真正跑过之前一律留空，
+  （Cohen's kappa、二次加权 kappa），以及同一 case 集上的多模型对比（`matrix`）。真实模型跑分见 `bench/results/2026-11-05-modelscope/`：Qwen3.5-27B 跑完 25 个 case，19 过、6 败，普通 case 18/19（1 条为网络错误）。**64 项 unittest**。质量分在 judge 真正跑过之前一律留空，
   不把未评分的 case 平均成"质量"。
 - `compose.yaml`：db / backend / worker / frontend / caddy 四个服务一键起。
-- **合计 195 项自动化测试**，CI 四个 job（collector / backend / agent / bench）每次 push 全跑。
+- **合计 196 项自动化测试**，CI 四个 job（collector / backend / agent / bench）每次 push 全跑。
 
 ## 诚实边界（不宣称已完成）
 
@@ -33,8 +33,9 @@ Next.js 控制台，以及配套的 unittest/pytest 测试集。
 - OCR 返回 unavailable；短链接明确拒绝，仅支持规范 HTTPS 视频链接/ID。
 - 分析模型客户端未做真实联调。部署已在本机 Docker Compose 实测（db/backend/worker/frontend/caddy 五服务，`/api/health` 200，登录后 `/api/videos` 200），但公网只是临时 quick tunnel：无固定域名、无 SLA，本机或隧道停止即失效。认证仍只有单一管理员口令。
 - 评测里的"模型"一栏在本地跑的是 `scripted-reference-policy`，它由 case 约束推出工具序列，
-  只证明 runner 与判据可用，**不是模型能力测量**；真实模型跑分与四模型选型对比需要 API key，
-  在跑出来之前不作宣称。judge 的 Rubric 权重是初始值，需人工标 10 条后按 kappa 校准。
+  只证明 runner 与判据可用，**不是模型能力测量**。真实模型已跑完 1 个（Qwen3.5-27B，25 个
+  case，见 `bench/results/2026-11-05-modelscope/`）；四模型对比因免费额度耗尽未完成，
+  在补齐之前不作宣称。judge 的 Rubric 权重是初始值，需人工标 10 条后按 kappa 校准。
 - 数据规模：截至 2026-10-20 为 21 条视频、129 条一级评论、50 条合并回复（去除 3 条重复），
   其中 20 条来自标记 `replay=true` 的历史回放，不是实时采集。
 - 交接打包件（handoff/*.zip）内含真实采集到的评论与回复原文，**不公开发布**；仓库只保留代码、测试与聚合后的规模数字。

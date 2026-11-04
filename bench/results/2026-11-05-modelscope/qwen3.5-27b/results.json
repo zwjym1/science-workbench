@@ -1,0 +1,1128 @@
+{
+  "generated_at": "2026-11-04T16:26:58.421257+00:00",
+  "meta": {
+    "label": "Qwen/Qwen3.5-27B",
+    "model": "Qwen/Qwen3.5-27B",
+    "case_file": "D:\\编程\\项目\\science-workbench\\bench\\clipbench\\cases",
+    "workdir": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\matrix-work\\Qwen__Qwen3.5-27B"
+  },
+  "summary": {
+    "cases": 25,
+    "passed": 19,
+    "failed": 6,
+    "known_failure_cases": 6,
+    "success_rate": 0.76,
+    "success_rate_core": 0.9474,
+    "quality_mean": null,
+    "quality_scored_cases": 0,
+    "quality_unscored_cases": 25,
+    "latency_mean_s": 35.073,
+    "latency_p50_s": 30.391,
+    "latency_p95_s": 87.592,
+    "prompt_tokens_estimate": 101626,
+    "render_seconds": 96.513,
+    "tool_calls": 114,
+    "reused_artifacts": 0,
+    "error_cases": [
+      "core-19"
+    ],
+    "failed_checks": {
+      "core-04": [
+        "shots",
+        "must_cite"
+      ],
+      "core-11": [
+        "duration_s",
+        "shots"
+      ],
+      "core-12": [
+        "shots"
+      ],
+      "core-19": [
+        "duration_s",
+        "shots",
+        "must_cite",
+        "render"
+      ],
+      "core-22": [
+        "max_latency_s"
+      ],
+      "core-24": [
+        "duration_s",
+        "must_cite"
+      ]
+    }
+  },
+  "cases": [
+    {
+      "case_id": "core-01",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 40.0, got 40.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 4, got 4"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 40.0"
+        }
+      ],
+      "latency_s": 36.208,
+      "prompt_tokens": 3709,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 7.983,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-02",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 15.0, got 15.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 1, got 1"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 15.0"
+        }
+      ],
+      "latency_s": 30.025,
+      "prompt_tokens": 3300,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.883,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-03",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 40.0, got 40.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 40, got 40"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 40.0"
+        }
+      ],
+      "latency_s": 76.018,
+      "prompt_tokens": 10415,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 0.002,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-04",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 3, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        }
+      ],
+      "latency_s": 14.919,
+      "prompt_tokens": 404,
+      "attempts": 1,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-05",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "min_assets",
+          "ok": true,
+          "detail": "want >= 3, got 3"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 30.0"
+        }
+      ],
+      "latency_s": 24.316,
+      "prompt_tokens": 3412,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 3.855,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-06",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 24.0, got 24.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 24.0"
+        },
+        {
+          "name": "max_latency_s",
+          "ok": true,
+          "detail": "limit 45.0s, took 35.29s"
+        }
+      ],
+      "latency_s": 35.293,
+      "prompt_tokens": 3657,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 6.654,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-07",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 20.0, got 20.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 2, got 2"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 20.0"
+        }
+      ],
+      "latency_s": 25.734,
+      "prompt_tokens": 2346,
+      "attempts": 4,
+      "reused": 0,
+      "render_seconds": 4.752,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-08",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 4, got 4"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 30.0"
+        }
+      ],
+      "latency_s": 27.693,
+      "prompt_tokens": 3951,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.939,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-09",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 600.0, got 600.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 8, got 8"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 600.0"
+        }
+      ],
+      "latency_s": 35.397,
+      "prompt_tokens": 4412,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.256,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-10",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 15.0, got 15.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 40, got 40"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 15.0"
+        }
+      ],
+      "latency_s": 87.592,
+      "prompt_tokens": 9638,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 0.002,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-11",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "want 10.0, got 15.0"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 2, got 4"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        }
+      ],
+      "latency_s": 29.887,
+      "prompt_tokens": 3870,
+      "attempts": 6,
+      "reused": 0,
+      "render_seconds": 4.743,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-12",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 41.0, got 41.0"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 41, got 40"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        }
+      ],
+      "latency_s": 102.188,
+      "prompt_tokens": 10680,
+      "attempts": 6,
+      "reused": 0,
+      "render_seconds": 0.002,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-13",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 24.0, got 24.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 24.0"
+        }
+      ],
+      "latency_s": 27.047,
+      "prompt_tokens": 3537,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.697,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-14",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 18.0, got 18.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 2, got 2"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 18.0"
+        },
+        {
+          "name": "max_latency_s",
+          "ok": true,
+          "detail": "limit 30.0s, took 24.61s"
+        }
+      ],
+      "latency_s": 24.608,
+      "prompt_tokens": 3161,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.681,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-15",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 60.0, got 60.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 6, got 6"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 60.0"
+        }
+      ],
+      "latency_s": 30.708,
+      "prompt_tokens": 4276,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 5.309,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-16",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 45.0, got 45.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 5, got 5"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 45.0"
+        }
+      ],
+      "latency_s": 30.391,
+      "prompt_tokens": 3845,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.794,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-17",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 90.0, got 90.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 9, got 9"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 90.0"
+        }
+      ],
+      "latency_s": 36.039,
+      "prompt_tokens": 4313,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.752,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-18",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 36.0, got 36.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 4, got 4"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 36.0"
+        }
+      ],
+      "latency_s": 33.666,
+      "prompt_tokens": 4121,
+      "attempts": 6,
+      "reused": 0,
+      "render_seconds": 4.649,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-19",
+      "status": "failed",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": false,
+          "detail": "want 5, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        },
+        {
+          "name": "min_assets",
+          "ok": true,
+          "detail": "want >= 2, got 3"
+        },
+        {
+          "name": "render",
+          "ok": false,
+          "detail": "render status None"
+        }
+      ],
+      "latency_s": 21.429,
+      "prompt_tokens": 822,
+      "attempts": 2,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "RuntimeError: model endpoint unreachable: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-20",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 40.0, got 40.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 5, got 5"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        }
+      ],
+      "latency_s": 12.822,
+      "prompt_tokens": 1596,
+      "attempts": 3,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-21",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 30.0"
+        }
+      ],
+      "latency_s": 30.755,
+      "prompt_tokens": 3212,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 7.616,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-22",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 30.0, got 30.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 30.0"
+        },
+        {
+          "name": "max_latency_s",
+          "ok": false,
+          "detail": "limit 1.0s, took 28.79s"
+        }
+      ],
+      "latency_s": 28.79,
+      "prompt_tokens": 3426,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 4.776,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-23",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 42.0, got 42.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 6, got 6"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "min_assets",
+          "ok": true,
+          "detail": "want >= 2, got 3"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 42.0"
+        }
+      ],
+      "latency_s": 32.133,
+      "prompt_tokens": 4493,
+      "attempts": 5,
+      "reused": 0,
+      "render_seconds": 5.742,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    },
+    {
+      "case_id": "core-24",
+      "status": "ok",
+      "passed": false,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": false,
+          "detail": "no storyboard produced"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 0, got 0"
+        },
+        {
+          "name": "must_cite",
+          "ok": false,
+          "detail": "no script"
+        }
+      ],
+      "latency_s": 10.642,
+      "prompt_tokens": 86,
+      "attempts": 0,
+      "reused": 0,
+      "render_seconds": 0.0,
+      "quality": null,
+      "error": "",
+      "known_failure": true
+    },
+    {
+      "case_id": "core-25",
+      "status": "ok",
+      "passed": true,
+      "checks": [
+        {
+          "name": "duration_s",
+          "ok": true,
+          "detail": "want 25.0, got 25.0"
+        },
+        {
+          "name": "shots",
+          "ok": true,
+          "detail": "want 3, got 3"
+        },
+        {
+          "name": "must_cite",
+          "ok": true,
+          "detail": "0 sentences without a citation"
+        },
+        {
+          "name": "min_assets",
+          "ok": true,
+          "detail": "want >= 2, got 3"
+        },
+        {
+          "name": "render",
+          "ok": true,
+          "detail": "render status ok"
+        },
+        {
+          "name": "render_resolution",
+          "ok": true,
+          "detail": "320x180"
+        },
+        {
+          "name": "render_duration",
+          "ok": true,
+          "detail": "actual 25.0"
+        }
+      ],
+      "latency_s": 32.516,
+      "prompt_tokens": 4944,
+      "attempts": 6,
+      "reused": 0,
+      "render_seconds": 7.426,
+      "quality": null,
+      "error": "",
+      "known_failure": false
+    }
+  ]
+}

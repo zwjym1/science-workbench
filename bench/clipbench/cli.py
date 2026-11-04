@@ -210,6 +210,38 @@ def cmd_score(args) -> int:
     return 0
 
 
+def cmd_rebuild(args) -> int:
+    """Rebuild results.json from per-case result files.
+
+    Useful after rerunning a single case by hand, and after an interrupted
+    batch: the per-case files are the source of truth, the batch summary is
+    derived.
+    """
+    from .case import load_cases
+
+    cases = load_cases(Path(args.cases))
+    runs = []
+    for case in cases:
+        path = Path(args.workdir) / case.id / 'result.json'
+        if not path.is_file():
+            continue
+        data = json.loads(path.read_text(encoding='utf-8'))
+        runs.append(CaseRun(**{k: v for k, v in data.items()
+                               if k in CaseRun.__dataclass_fields__}))
+    if not runs:
+        print(f'no result.json under {args.workdir}', file=sys.stderr)
+        return 2
+    out = Path(args.out)
+    meta = {'label': args.label, 'model': args.model,
+            'case_file': str(args.cases), 'rebuilt': True}
+    write_json(out / 'results.json', runs, meta)
+    write_markdown(out / 'report.md', runs, meta)
+    s = summarize(runs)
+    print(f'rebuilt {s["cases"]} cases: {s["passed"]} passed, '
+          f'core {s["success_rate_core"]}')
+    return 0
+
+
 def cmd_matrix(args) -> int:
     """Run the same case set once per model and write one comparison table."""
     import os
@@ -239,9 +271,13 @@ def cmd_matrix(args) -> int:
                             timeout=args.timeout),
                         max_steps=args.max_steps, force=args.force)
         runs = runner.run_all(cases, progress=not args.quiet)
-        meta = {'label': model, 'model': model, 'case_file': str(args.cases)}
+        meta = {'label': model, 'model': model, 'case_file': str(args.cases),
+                'workdir': str(Path(args.workdir) / slug)}
         write_json(folder / 'results.json', runs, meta)
         write_markdown(folder / 'report.md', runs, meta)
+        from .attribution import attribute_results, render_report
+        (folder / 'attribution.md').write_text(
+            render_report(attribute_results(folder / 'results.json')), encoding='utf-8')
         rows.append({'model': model, 'summary': summarize(runs)})
         print(f'[{model}] {rows[-1]["summary"]["passed"]}/{len(runs)} passed')
     text = render_matrix(rows, {'label': args.label, 'cases': len(cases),
@@ -359,6 +395,14 @@ def main(argv: list[str] | None = None) -> int:
     score.add_argument('--out', default='.bench-out/judge-scores.csv')
     score.add_argument('--html', default='', help='write a human scoring page')
     score.set_defaults(func=cmd_score)
+
+    rebuild = sub.add_parser('rebuild', help='rebuild a batch summary from case files')
+    rebuild.add_argument('--workdir', required=True)
+    rebuild.add_argument('--out', required=True)
+    rebuild.add_argument('--cases', default=str(DEFAULT_CASES))
+    rebuild.add_argument('--label', default='rebuilt from case files')
+    rebuild.add_argument('--model', default='(unspecified)')
+    rebuild.set_defaults(func=cmd_rebuild)
 
     matrix = sub.add_parser('matrix', help='run one case set across several models')
     matrix.add_argument('--models', required=True, help='comma separated model ids')
