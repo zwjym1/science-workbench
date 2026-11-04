@@ -10,7 +10,7 @@ from clipagent.llm import OpenAICompatClient, ScriptedClient
 
 from . import policy
 from .case import load_cases
-from .metrics import CaseRun
+from .metrics import CaseRun, summarize
 from .report import render_comparison, write_json, write_markdown
 from .runner import Runner
 
@@ -92,6 +92,129 @@ def cmd_attribute(args) -> int:
     if args.out:
         Path(args.out).write_text(text, encoding='utf-8')
         print(f'\nwrote {args.out}')
+    return 0
+
+
+def _judge_client():
+    """Judge endpoint, separate from the agent model when JUDGE_* is set."""
+    import os
+    from clipagent.llm import OpenAICompatClient
+    base = os.environ.get('JUDGE_BASE_URL') or os.environ.get('CLIPAGENT_BASE_URL')
+    model = os.environ.get('JUDGE_MODEL') or os.environ.get('CLIPAGENT_MODEL')
+    key = os.environ.get('JUDGE_API_KEY') or os.environ.get('CLIPAGENT_API_KEY', '')
+    if not base or not model:
+        return None, None
+    return OpenAICompatClient(base_url=base.rstrip('/'), model=model,
+                              api_key=key, timeout=90), model
+
+
+def _latest_artifact(workdir: Path, case_id: str, tool: str) -> dict:
+    folder = Path(workdir) / case_id / 'artifacts'
+    manifests = sorted(folder.glob(tool + '-*/manifest.json'),
+                       key=lambda p: p.stat().st_mtime)
+    if not manifests:
+        return {}
+    return json.loads(manifests[-1].read_text(encoding='utf-8'))
+
+
+def cmd_score(args) -> int:
+    """Score finished runs with the judge; emits a human/judge score sheet."""
+    import csv
+    from .case import load_cases
+    from .judge import LLMJudge, RubricJudge
+
+    results = json.loads(Path(args.results).read_text(encoding='utf-8'))
+    runs = results['cases']
+    cases = {c.id: c for c in load_cases(Path(args.cases))}
+
+    if args.judge == 'rubric':
+        judge, model = RubricJudge(), 'rubric-standin (not a quality judgement)'
+    else:
+        client, model = _judge_client()
+        if client is None:
+            print('set JUDGE_BASE_URL/JUDGE_MODEL (or CLIPAGENT_*), '
+                  'or use --judge rubric for an offline dry run', file=sys.stderr)
+            return 2
+        judge = LLMJudge(client)
+
+    rows, detail = [], []
+    for run in runs:
+        case = cases.get(run['case_id'])
+        script = _latest_artifact(Path(args.workdir), run['case_id'], 'write_script')
+        if not case or not script:
+            continue
+        board = _latest_artifact(Path(args.workdir), run['case_id'], 'make_storyboard')
+        payload = {
+            'case_id': run['case_id'], 'task': case.task,
+            'constraints': case.constraints,
+            'checks': run.get('checks') or [],
+            'sentences': (script.get('sentences') or [])[:8],
+            'shots': (board.get('shots') or [])[:12],
+        }
+        score = judge.score(payload)
+        rows.append({'case_id': run['case_id'],
+                     'human_score_1to5': '',
+                     'judge_score_1to5': round(score.weighted, 2),
+                     'note': score.rationale[:80]})
+        detail.append({**score.as_dict(), 'model': model})
+
+    if not rows:
+        print('no scored runs: no write_script artifact under the workdir', file=sys.stderr)
+        return 2
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open('w', encoding='utf-8', newline='') as handle:
+        writer = csv.DictWriter(handle, fieldnames=['case_id', 'human_score_1to5',
+                                                    'judge_score_1to5', 'note'])
+        writer.writeheader()
+        writer.writerows(rows)
+    out.with_suffix('.json').write_text(
+        json.dumps({'model': model, 'scores': detail}, ensure_ascii=False, indent=2),
+        encoding='utf-8')
+    mean = sum(r['judge_score_1to5'] for r in rows) / len(rows)
+    print(f'scored {len(rows)} cases with {model}; judge mean {mean:.2f}/5')
+    print(f'wrote {out} (human column blank) and {out.with_suffix(".json")}')
+    return 0
+
+
+def cmd_matrix(args) -> int:
+    """Run the same case set once per model and write one comparison table."""
+    import os
+    from clipagent.llm import OpenAICompatClient
+    from .case import load_cases
+    from .report import render_matrix
+    from .runner import Runner
+
+    base = os.environ.get('CLIPAGENT_BASE_URL')
+    key = os.environ.get('CLIPAGENT_API_KEY', '')
+    if not base:
+        print('set CLIPAGENT_BASE_URL and CLIPAGENT_API_KEY', file=sys.stderr)
+        return 2
+    models = [m.strip() for m in args.models.split(',') if m.strip()]
+    if not models:
+        print('--models is empty', file=sys.stderr)
+        return 2
+    cases = load_cases(Path(args.cases))
+    out = Path(args.out)
+    rows = []
+    for model in models:
+        slug = model.replace('/', '__').replace(':', '_')
+        folder = out / slug
+        runner = Runner(Path(args.workdir) / slug,
+                        lambda case, m=model: OpenAICompatClient(
+                            base_url=base.rstrip('/'), model=m, api_key=key,
+                            timeout=args.timeout),
+                        max_steps=args.max_steps, force=args.force)
+        runs = runner.run_all(cases, progress=not args.quiet)
+        meta = {'label': model, 'model': model, 'case_file': str(args.cases)}
+        write_json(folder / 'results.json', runs, meta)
+        write_markdown(folder / 'report.md', runs, meta)
+        rows.append({'model': model, 'summary': summarize(runs)})
+        print(f'[{model}] {rows[-1]["summary"]["passed"]}/{len(runs)} passed')
+    text = render_matrix(rows, {'label': args.label, 'cases': len(cases),
+                                'judge': 'see clipbench score per model'})
+    (out / 'matrix.md').write_text(text, encoding='utf-8')
+    print(text)
     return 0
 
 
@@ -194,6 +317,26 @@ def main(argv: list[str] | None = None) -> int:
     cal.add_argument('sheet')
     cal.add_argument('--out', default='')
     cal.set_defaults(func=cmd_calibrate)
+
+    score = sub.add_parser('score', help='run the judge over finished runs')
+    score.add_argument('--results', default='.bench-out/results.json')
+    score.add_argument('--workdir', default='.bench-work')
+    score.add_argument('--cases', default=str(DEFAULT_CASES))
+    score.add_argument('--judge', choices=['llm', 'rubric'], default='llm')
+    score.add_argument('--out', default='.bench-out/judge-scores.csv')
+    score.set_defaults(func=cmd_score)
+
+    matrix = sub.add_parser('matrix', help='run one case set across several models')
+    matrix.add_argument('--models', required=True, help='comma separated model ids')
+    matrix.add_argument('--cases', default=str(DEFAULT_CASES))
+    matrix.add_argument('--workdir', default='.bench-work')
+    matrix.add_argument('--out', default='.bench-matrix')
+    matrix.add_argument('--label', default='model comparison')
+    matrix.add_argument('--max-steps', type=int, default=12)
+    matrix.add_argument('--timeout', type=int, default=90)
+    matrix.add_argument('--force', action='store_true')
+    matrix.add_argument('--quiet', action='store_true')
+    matrix.set_defaults(func=cmd_matrix)
 
     args = parser.parse_args(argv)
     return args.func(args)

@@ -61,11 +61,14 @@ class OpenAICompatClient:
                    api_key=os.environ.get('CLIPAGENT_API_KEY', ''))
 
     def decide(self, messages: list[dict], tools: list[dict]) -> Decision:
-        body = json.dumps({'model': self.model, 'messages': _to_chat(messages),
-                           'tools': tools, 'tool_choice': 'auto',
-                           'temperature': self.temperature}).encode('utf-8')
+        body = {'model': self.model, 'messages': _to_chat(messages),
+                'temperature': self.temperature}
+        if tools:
+            body['tools'] = tools
+            body['tool_choice'] = 'auto'
         request = urllib.request.Request(
-            self.base_url + '/chat/completions', data=body,
+            self.base_url + '/chat/completions',
+            data=json.dumps(body).encode('utf-8'),
             headers={'Content-Type': 'application/json',
                      'Authorization': f'Bearer {self.api_key}'})
         try:

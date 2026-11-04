@@ -69,6 +69,30 @@ def write_markdown(path: Path, runs: list[CaseRun], meta: dict[str, Any]) -> Pat
     return Path(path)
 
 
+def render_matrix(rows: list[dict[str, Any]], meta: dict[str, Any]) -> str:
+    """One row per model, same case set. No quality column unless judged."""
+    lines = [
+        f"# Model comparison — {meta.get('label', 'matrix')}",
+        '',
+        f"- cases per model: {meta.get('cases', '?')}",
+        f"- judge: {meta.get('judge', 'not run')}",
+        '',
+        '| model | passed | success | core | p50 | p95 | tokens | render s | errors |',
+        '|---|---|---|---|---|---|---|---|---|',
+    ]
+    for row in rows:
+        s = row['summary']
+        lines.append(
+            f"| `{row['model']}` | {s['passed']}/{s['cases']} | "
+            f"{_pct(s['success_rate'])} | {_pct(s['success_rate_core'])} | "
+            f"{s['latency_p50_s']}s | {s['latency_p95_s']}s | "
+            f"{s['prompt_tokens_estimate']} | {s['render_seconds']}s | "
+            f"{len(s['error_cases'])} |")
+    lines += ['', '> Token counts are character-based estimates. `core` excludes '
+                  'known-failure cases; both rates are shown so neither hides the other.', '']
+    return '\n'.join(lines)
+
+
 def render_comparison(baseline: list[CaseRun], candidate: list[CaseRun],
                       meta: dict[str, Any]) -> str:
     diff = compare(baseline, candidate)

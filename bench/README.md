@@ -7,7 +7,7 @@ rather than asserted.
 ```bash
 pip install -e ../agent -e .
 clipbench run --workdir /tmp/bench-work --out /tmp/bench-out
-python -m unittest discover -s tests          # 61 tests
+python -m unittest discover -s tests          # 63 tests
 ```
 
 ## What a report looks like
@@ -129,6 +129,37 @@ meaningful.
 measurement of narrative quality. A calibration run that used it would agree
 with itself for reasons that have nothing to do with a model, so its scores are
 never presented as judge results in a report.
+
+To score finished runs, read the artifacts back from the run directory:
+
+```bash
+export JUDGE_BASE_URL=https://api-inference.modelscope.cn/v1
+export JUDGE_MODEL=Qwen/Qwen3-32B
+export JUDGE_API_KEY=ms-...
+clipbench score --results /tmp/bench-out/results.json \
+                --workdir /tmp/bench-work --out labels.csv
+```
+
+It judges cases that actually produced a script (known-failure cases have
+nothing to score), writes the judge column and leaves the human column blank.
+`--judge rubric` runs entirely offline and labels its output as a stand-in.
+
+## One case set, several models
+
+```bash
+export CLIPAGENT_BASE_URL=https://api-inference.modelscope.cn/v1
+export CLIPAGENT_API_KEY=ms-...
+clipbench matrix --models Qwen/Qwen3-32B,Qwen/Qwen3-14B,deepseek-ai/DeepSeek-V3,moonshotai/Kimi-K2 \
+                 --out /tmp/matrix
+```
+
+Each model gets its own work directory, so cached artifacts are never shared
+between models and a rerun cannot look cheaper by reusing another model's work.
+`matrix.md` lists passed, both success rates, p50/p95, token estimate, render
+seconds and error count per model — the same four metrics, one row per model.
+
+Tool calling must work through the endpoint; run one case with `--only` before
+spending a day's quota on the full set.
 
 ## What is still missing
 

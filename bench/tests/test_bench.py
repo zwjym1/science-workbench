@@ -7,7 +7,7 @@ from clipagent.llm import ScriptedClient
 from clipbench import policy
 from clipbench.case import Case, check_constraints, load_cases
 from clipbench.metrics import CaseRun, compare, summarize
-from clipbench.report import render_comparison, render_markdown
+from clipbench.report import render_comparison, render_markdown, write_json
 from clipbench.runner import Runner
 
 
@@ -170,12 +170,41 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue((self.root / 'a' / 'runs').is_dir())
         self.assertTrue((self.root / 'b' / 'runs').is_dir())
 
+    def test_score_fills_judge_column_and_leaves_human_blank(self):
+        import argparse
+        from clipbench.cli import cmd_score
+        c = case('sc1', duration_s=8, shots=2, must_cite=True)
+        runs = self._runner().run_all([c], progress=False)
+        out = self.root / 'out'
+        write_json(out / 'results.json', runs, {})
+        cases_dir = Path(tempfile.mkdtemp())
+        (cases_dir / 'one.json').write_text(json.dumps([c.as_dict()]),
+                                            encoding='utf-8')
+        code = cmd_score(argparse.Namespace(
+            results=str(out / 'results.json'), workdir=str(self.root),
+            cases=str(cases_dir), judge='rubric', out=str(out / 'scores.csv')))
+        self.assertEqual(code, 0)
+        lines = (out / 'scores.csv').read_text(encoding='utf-8').splitlines()
+        self.assertEqual(lines[0], 'case_id,human_score_1to5,judge_score_1to5,note')
+        self.assertTrue(lines[1].startswith('sc1,,'), lines[1])
+        self.assertTrue((out / 'scores.json').is_file())
+
 
 class ReportTests(unittest.TestCase):
     def test_markdown_states_that_quality_was_not_scored(self):
         text = render_markdown([CaseRun('a', 'ok', True)], {'label': 'x'})
         self.assertIn('not scored (no judge run)', text)
         self.assertIn('character-based estimates', text)
+
+    def test_matrix_keeps_both_rates_per_model(self):
+        from clipbench.report import render_matrix
+        runs = [CaseRun('a', 'ok', True), CaseRun('b', 'failed', False,
+                                                  known_failure=True)]
+        text = render_matrix([{'model': 'm/one', 'summary': summarize(runs)}],
+                             {'label': 'x', 'cases': 2})
+        self.assertIn('`m/one`', text)
+        self.assertIn('50.0%', text)
+        self.assertIn('100.0%', text)
 
     def test_markdown_separates_known_failures_from_ordinary_cases(self):
         text = render_markdown([CaseRun('a', 'ok', True),

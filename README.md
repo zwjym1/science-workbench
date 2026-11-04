@@ -22,10 +22,10 @@ Next.js 控制台，以及配套的 unittest/pytest 测试集。
   ffprobe 回读、时延上限）、按 case 断点续跑、两次运行的逐 case 回归对比，以及从 trace
   读出的失败归因（五类：环境 / 参数生成 / 工具选择 / 上下文 / 规划，无法归类时如实标
   unclassified）。另有固定提示词、固定温度的 LLM-as-a-Judge 与人工标注一致性计算
-  （Cohen's kappa、二次加权 kappa）。**61 项 unittest**。质量分在 judge 真正跑过之前一律留空，
+  （Cohen's kappa、二次加权 kappa），以及同一 case 集上的多模型对比（`matrix`）。**63 项 unittest**。质量分在 judge 真正跑过之前一律留空，
   不把未评分的 case 平均成"质量"。
 - `compose.yaml`：db / backend / worker / frontend / caddy 四个服务一键起。
-- **合计 193 项自动化测试**，CI 四个 job（collector / backend / agent / bench）每次 push 全跑。
+- **合计 195 项自动化测试**，CI 四个 job（collector / backend / agent / bench）每次 push 全跑。
 
 ## 诚实边界（不宣称已完成）
 
