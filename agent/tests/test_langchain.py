@@ -27,9 +27,10 @@ class ParityTests(unittest.TestCase):
         self.assertEqual(report.schema_mismatch, [])
 
     def test_parity_report_is_explicit_when_framework_is_absent(self):
-        if langchain_agent.available():
-            self.skipTest('langchain installed; absence path not exercised')
-        report = langchain_agent.parity_report()
+        from unittest.mock import patch
+
+        with patch.object(langchain_agent, 'available', return_value=False):
+            report = langchain_agent.parity_report()
         self.assertFalse(report.ok)
         self.assertEqual(report.only_native, sorted(t.name for t in build_tools()))
 
