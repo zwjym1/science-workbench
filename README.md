@@ -31,7 +31,7 @@ Next.js 控制台，以及配套的 unittest/pytest 测试集。
 
 - PostgreSQL 迁移脚本已提供，但**尚未在真实 PG 实例上验证**，SQLite 测试不能替代它。
 - OCR 返回 unavailable；短链接明确拒绝，仅支持规范 HTTPS 视频链接/ID。
-- 分析模型客户端未做真实联调；公网 HTTPS 与认证未开放。
+- 分析模型客户端未做真实联调。部署已在本机 Docker Compose 实测（db/backend/worker/frontend/caddy 五服务，`/api/health` 200，登录后 `/api/videos` 200），但公网只是临时 quick tunnel：无固定域名、无 SLA，本机或隧道停止即失效。认证仍只有单一管理员口令。
 - 评测里的"模型"一栏在本地跑的是 `scripted-reference-policy`，它由 case 约束推出工具序列，
   只证明 runner 与判据可用，**不是模型能力测量**；真实模型跑分与四模型选型对比需要 API key，
   在跑出来之前不作宣称。judge 的 Rubric 权重是初始值，需人工标 10 条后按 kappa 校准。

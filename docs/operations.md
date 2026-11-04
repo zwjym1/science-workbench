@@ -2,6 +2,30 @@
 
 生产使用私有 Ubuntu 主机与域名，先确认 Docker Compose 可运行。不要把管理密码或 `.env` 提交到 Git。Caddy 自动管理证书；首次部署需实际确认域名、证书和 iPhone Cookie 登录。当前没有远程服务器凭证，因此没有执行云部署。
 
+## 单机部署（2026-11-04 在 Windows + Docker Desktop 实测）
+
+```sh
+cp .env.example .env      # 填 ADMIN_PASSWORD / SESSION_SECRET / POSTGRES_PASSWORD，
+                          # 并把 DATABASE_URL 里的密码改成同一个
+docker compose up -d --build
+docker compose ps         # backend/db 应为 healthy
+curl http://127.0.0.1/api/health
+```
+
+实测结果：`db`、`backend`、`worker`、`frontend`、`caddy` 五个服务启动，根路径 200、`/api/health` 返回 `{"status":"ok"}`，用 `.env` 里的管理员密码登录后 `/api/videos` 返回 200。
+
+一个已修复的启动问题：`alembic` 控制台脚本的 `sys.path` 不含工作目录，容器里直接跑 `alembic upgrade head` 会报 `ModuleNotFoundError: app`。Dockerfile 已改成 `python -m alembic upgrade head`，这样当前目录进入 `sys.path`。
+
+没有域名时用 `SITE_ADDRESS=:80` 且 `COOKIE_SECURE=false`，只能 HTTP；有域名时把 `SITE_ADDRESS` 设成域名，Caddy 自动签证书，并把 `COOKIE_SECURE=true`。
+
+临时公网演示可用 Cloudflare quick tunnel（无账号、无 uptime 保证，本机或隧道停止即失效，地址每次重启都会变）：
+
+```sh
+cloudflared tunnel --url http://localhost:80 --no-autoupdate
+```
+
+这套 Compose 部署的是采集与选题台（FastAPI + PostgreSQL + Next.js），不是 `agent/` 的评测台；对外描述时不要把两者混为一谈。
+
 ## PostgreSQL 备份（Ubuntu shell，项目根目录）
 
 ```sh
