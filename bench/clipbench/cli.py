@@ -138,6 +138,7 @@ def cmd_score(args) -> int:
         judge = LLMJudge(client)
 
     rows, detail = [], []
+    payloads = []
     for run in runs:
         case = cases.get(run['case_id'])
         script = _latest_artifact(Path(args.workdir), run['case_id'], 'write_script')
@@ -151,6 +152,7 @@ def cmd_score(args) -> int:
             'sentences': (script.get('sentences') or [])[:8],
             'shots': (board.get('shots') or [])[:12],
         }
+        payloads.append(payload)
         score = judge.score(payload)
         rows.append({'case_id': run['case_id'],
                      'human_score_1to5': '',
@@ -171,6 +173,37 @@ def cmd_score(args) -> int:
     out.with_suffix('.json').write_text(
         json.dumps({'model': model, 'scores': detail}, ensure_ascii=False, indent=2),
         encoding='utf-8')
+    if getattr(args, 'html', ''):
+        from html import escape
+        blocks = []
+        for payload in payloads:
+            checks = ' '.join(
+                f"<span class='{'ok' if c['ok'] else 'bad'}'>{escape(c['name'])}</span>"
+                for c in payload['checks'])
+            sentences = ''.join(
+                f"<li>{escape(str(s.get('beat', '')))}：{escape(str(s.get('text', '')))} "
+                f"<em>[{escape(str(s.get('citation') or '无引用'))}]</em></li>"
+                for s in payload['sentences'])
+            blocks.append(
+                f"<section><h2>{escape(payload['case_id'])}</h2>"
+                f"<p class='task'>{escape(payload['task'])}</p>"
+                f"<p>约束：{escape(json.dumps(payload['constraints'], ensure_ascii=False))}</p>"
+                f"<p>规则检查：{checks}</p><ol>{sentences}</ol>"
+                f"<p class='hint'>看完这一条，回到 CSV 的 human_score_1to5 列打 1-5 分</p></section>")
+        page = (
+            '<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
+            '<title>人工评分表</title><style>'
+            'body{font-family:system-ui,sans-serif;max-width:900px;margin:24px auto;'
+            'line-height:1.6;padding:0 16px}h2{font-size:18px;margin-bottom:4px}'
+            'section{border-bottom:1px solid #ddd;padding:16px 0}'
+            '.task{color:#333}.hint{color:#888;font-size:12px}'
+            '.ok{color:#0a7;margin-right:8px}.bad{color:#c33;margin-right:8px}'
+            '</style><h1>人工评分表（1-5 分）</h1>'
+            '<p>只评叙事连贯、信息密度与是否像一条能看的科普片；'
+            '时长和引用是否合规看下面的规则检查，不要重复计分。</p>'
+            + ''.join(blocks) + '</html>')
+        Path(args.html).write_text(page, encoding='utf-8')
+        print(f'wrote {args.html} for human scoring')
     mean = sum(r['judge_score_1to5'] for r in rows) / len(rows)
     print(f'scored {len(rows)} cases with {model}; judge mean {mean:.2f}/5')
     print(f'wrote {out} (human column blank) and {out.with_suffix(".json")}')
@@ -324,6 +357,7 @@ def main(argv: list[str] | None = None) -> int:
     score.add_argument('--cases', default=str(DEFAULT_CASES))
     score.add_argument('--judge', choices=['llm', 'rubric'], default='llm')
     score.add_argument('--out', default='.bench-out/judge-scores.csv')
+    score.add_argument('--html', default='', help='write a human scoring page')
     score.set_defaults(func=cmd_score)
 
     matrix = sub.add_parser('matrix', help='run one case set across several models')
