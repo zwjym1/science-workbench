@@ -1,5 +1,7 @@
 # science-workbench — AI 科普内容采集与自动化评测工作台
 
+[![tests](https://github.com/zwjym1/science-workbench/actions/workflows/tests.yml/badge.svg)](https://github.com/zwjym1/science-workbench/actions/workflows/tests.yml)
+
 一个面向科普视频生产的 Agent 工作台：公开数据采集与规范化管道、FastAPI 服务端与后台 worker、
 Next.js 控制台，以及配套的 unittest/pytest 测试集。
 
@@ -7,7 +9,7 @@ Next.js 控制台，以及配套的 unittest/pytest 测试集。
 
 - `collector/`：抖音公开内容采集管道。6 个 stdio MCP 工具、独立 worker 领任务、按视频与采集选项做缓存命中、
   结果标准化与评论去重/父子关系还原、原始证据哈希、来源暂停与恢复。
-  **62 项 unittest 全绿，约 8 秒**（含真实 MCP 子进程握手、发现、提交与非法 URL 负例）。
+  **62 项 unittest 全绿**（含真实 MCP 子进程握手、发现、提交与非法 URL 负例）。
 - `backend/`：FastAPI + SQLAlchemy 2 + Alembic 迁移 + SQLite/PostgreSQL 双方言，15 项 pytest 用例。
 - `agent/`：自写的 ReAct 循环（规划→行动→观察→重规划），5 个 Function Calling 工具，
   按 `sha256(tool, args)` 做内容寻址的产物复用，失败即观察、由模型重新规划而不盲目重试；
