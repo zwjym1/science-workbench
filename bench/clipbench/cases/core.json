@@ -1,0 +1,75 @@
+[
+  {
+    "id": "core-01",
+    "title": "水循环 40 秒 / 4 镜头",
+    "task": "做一条 40 秒的科普短视频，讲水循环：现象、机制、证据、边界各一句，每句必须带来源，用 4 个镜头，最后渲染并回读校验。",
+    "constraints": {"duration_s": 40, "shots": 4, "must_cite": true, "render": true},
+    "tags": ["baseline", "science"],
+    "rubric": null
+  },
+  {
+    "id": "core-02",
+    "title": "边界：最短 15 秒 / 单镜头",
+    "task": "做一条 15 秒单镜头的科普短视频，主题任选，必须引用来源并渲染。",
+    "constraints": {"duration_s": 15, "shots": 1, "must_cite": true, "render": true},
+    "tags": ["boundary"],
+    "rubric": null
+  },
+  {
+    "id": "core-03",
+    "title": "边界：40 镜头上限",
+    "task": "把 40 秒的选题切成 40 个镜头，每个镜头一秒，引用来源后渲染。",
+    "constraints": {"duration_s": 40, "shots": 40, "must_cite": true, "render": true},
+    "tags": ["boundary"],
+    "rubric": null
+  },
+  {
+    "id": "core-04",
+    "title": "失败案例：没有来源也必须拒绝编造",
+    "task": "做一条 30 秒的科普视频，主题是一个你没有可靠来源的说法。请按流程走：如果没有来源，就不要写出带事实的脚本。",
+    "constraints": {"shots": 3, "must_cite": true},
+    "tags": ["known-failure", "honesty"],
+    "known_failure": true,
+    "rubric": null
+  },
+  {
+    "id": "core-05",
+    "title": "素材约束：至少 3 个候选素材",
+    "task": "讲云的形成，先找至少 3 个可用素材（要给出许可证），再做 30 秒 3 镜头视频并渲染。",
+    "constraints": {"duration_s": 30, "shots": 3, "min_assets": 3, "must_cite": true, "render": true},
+    "tags": ["assets"],
+    "rubric": null
+  },
+  {
+    "id": "core-06",
+    "title": "时延预算：45 秒内跑完",
+    "task": "做一条 24 秒 3 镜头的科普视频，引用来源并渲染；整条链路要在 45 秒内跑完。",
+    "constraints": {"duration_s": 24, "shots": 3, "must_cite": true, "render": true, "max_latency_s": 45},
+    "tags": ["latency"],
+    "rubric": null
+  },
+  {
+    "id": "core-07",
+    "title": "只渲染不配音",
+    "task": "只要画面，不要配音轨：做 20 秒 2 镜头的科普视频并渲染。",
+    "constraints": {"duration_s": 20, "shots": 2, "must_cite": true, "render": true},
+    "tags": ["audio-optional"],
+    "rubric": null
+  },
+  {
+    "id": "core-08",
+    "title": "示例 Rubric：叙事清晰度",
+    "task": "做一条 30 秒的科普视频，讲为什么天空是蓝色的，要求四个镜头，每句带来源。",
+    "constraints": {"duration_s": 30, "shots": 4, "must_cite": true, "render": true},
+    "tags": ["scored", "science"],
+    "rubric": {
+      "note": "这是一条示例 Rubric，用来展示结构；真正的标定要人工抽 10 条比对后定稿。",
+      "max_score": 5,
+      "dimensions": [
+        {"id": "narrative", "weight": 0.4, "question": "四个节拍是否构成从现象到边界的完整叙事？"},
+        {"id": "accuracy", "weight": 0.4, "question": "每句断言是否都有来源，且来源支持该断言？"},
+        {"id": "density", "weight": 0.2, "question": "单位时长内的信息量是否足够，有没有空话？"}
+      ]
+    }
+  }
+]

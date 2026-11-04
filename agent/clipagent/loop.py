@@ -153,9 +153,11 @@ class Agent:
             try:
                 payload = tool.fn(args, self.ctx)
             except ToolError as exc:
+                # Bad arguments do not fix themselves: hand the error back to the
+                # model once and let it re-plan, instead of burning attempts.
                 last = f'invalid_arguments: {exc}'
                 trace.record('error', tool=name, attempt=attempt, reason=last)
-                continue                              # bad args do not fix themselves
+                return {'ok': False, 'reason': last, 'attempts': attempt}
             except Exception as exc:
                 last = f'{type(exc).__name__}: {exc}'
                 trace.record('error', tool=name, attempt=attempt, reason=last)

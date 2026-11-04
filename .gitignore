@@ -23,3 +23,6 @@ tsconfig.tsbuildinfo
 
 samples/clipagent-demo/
 agent/*.egg-info/
+
+bench/.bench-work/
+bench/.bench-out/

@@ -68,6 +68,16 @@ class ReplanTests(unittest.TestCase):
         self.assertTrue(errors)
         self.assertIn('invalid_arguments', errors[0]['payload']['reason'])
 
+    def test_invalid_arguments_are_not_retried(self):
+        script = [{'tool': 'write_script', 'args': {'topic': '水循环'}},
+                  {'final': 'gave up'}]
+        result = Agent(ScriptedClient(script), workdir=self.dir,
+                       max_attempts=3).run('task')
+        self.assertEqual(result.attempts, 1)
+        rows = Trace.read(Path(result.trace_path))
+        errors = [r for r in rows if r['kind'] == 'error']
+        self.assertEqual(len(errors), 1)
+
     def test_unknown_tool_does_not_crash_the_run(self):
         script = [{'tool': 'nonexistent', 'args': {}}, {'final': 'ok anyway'}]
         result = Agent(ScriptedClient(script), workdir=self.dir).run('task')
