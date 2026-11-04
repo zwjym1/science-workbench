@@ -3,6 +3,7 @@ import asyncio
 import hashlib
 import ipaddress
 import json
+import os
 import re
 import socket
 import subprocess
@@ -140,12 +141,25 @@ def _subtitle_source(detail, video):
     return None, None
 
 
+def _asr_script() -> Path:
+    """Resolve the local transcriber.
+
+    Override with DYCOLLECTOR_ASR_SCRIPT for a different model/binary; the
+    default is the pinned in-repo wrapper so a clean checkout behaves the same
+    as the author's machine.
+    """
+    override = os.environ.get('DYCOLLECTOR_ASR_SCRIPT')
+    if override:
+        return Path(override).expanduser()
+    return Path(__file__).resolve().parents[1] / 'asr' / 'transcribe_local.py'
+
+
 def _local_asr(media, output_dir, metadata):
     if metadata.get('has_audio') is False:
         return {'status': 'needs_review', 'reason': 'no_audio', 'segments': []}
     if 'has_audio' not in metadata:
         return {'status': 'unavailable', 'reason': 'audio_probe_unavailable'}
-    script = Path(__file__).resolve().parents[2] / 'research/douyin-validation/transcribe_local.py'
+    script = _asr_script()
     if not script.is_file():
         return {'status': 'unavailable', 'reason': 'local_asr_unavailable'}
     asr_dir = output_dir / ('asr-' + uuid.uuid4().hex)

@@ -1,5 +1,6 @@
 """Offline historical normalization. Never imports a network client."""
 import argparse
+import os
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -7,11 +8,19 @@ from pathlib import Path
 from dycollector.normalize import normalize_capture
 
 
+def default_source():
+    """Evidence lives outside the repo; point DYCOLLECTOR_EVIDENCE at a batch summary."""
+    override = os.environ.get('DYCOLLECTOR_EVIDENCE')
+    if override:
+        return Path(override).expanduser()
+    return Path(__file__).resolve().parent.parent / 'research/douyin-validation/evidence/batch20/summary.json'
+
+
 def main():
-    root = Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--source', type=Path, default=root / 'research/douyin-validation/evidence/batch20/summary.json')
-    parser.add_argument('--output', type=Path, default=root / 'collector/data/replay-report.json')
+    parser.add_argument('--source', type=Path, default=default_source())
+    parser.add_argument('--output', type=Path,
+                        default=Path(__file__).resolve().parent / 'data/replay-report.json')
     args = parser.parse_args()
     source = args.source.resolve()
     output = args.output.resolve()

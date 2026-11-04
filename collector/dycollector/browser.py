@@ -1,6 +1,7 @@
 """Serial, normal-UI guest collection. Never exports browser credentials."""
 import asyncio
 import json
+import os
 import re
 import sys
 import time
@@ -48,8 +49,15 @@ class GuestBrowser:
         self.lock=FileLock(str(self.data_dir/'browser.lock'),timeout=0)
         self.lock.acquire()
         try:
-            source=Path(__file__).resolve().parents[2]/'research/douyin-validation/dtk/docker'
-            if not source.exists(): raise RuntimeError('Pinned v5 browser component checkout is missing')
+            # Live capture needs an external CDP browser backend; it is
+            # intentionally not vendored here. Point DYCOLLECTOR_BROWSER_BACKEND
+            # at a browser_rpc checkout, or run the pipeline against fixtures.
+            source=Path(os.environ.get('DYCOLLECTOR_BROWSER_BACKEND','')).expanduser() if os.environ.get('DYCOLLECTOR_BROWSER_BACKEND') else None
+            if source is None or not source.is_dir():
+                raise RuntimeError(
+                    'No browser backend configured. Set DYCOLLECTOR_BROWSER_BACKEND '
+                    'to a directory containing browser_rpc; normalization, storage '
+                    'and evaluation run without it.')
             sys.path.insert(0,str(source))
             from browser_rpc.backends.cloak import CloakBackend
             from browser_rpc.settings import Settings
@@ -74,7 +82,7 @@ class GuestBrowser:
 
     async def collect(self, video_id, *, max_pages=3, max_comments=50):
         from datetime import datetime,timezone
-        from dtk.platforms.douyin.adapter import ADAPTER
+        from .risk import detect_risk_control
         video_id=parse_video_ref(video_id)
         row={'video_id':video_id,'collected_at':datetime.now(timezone.utc).isoformat(),'detail':None,'nested_suggest_words':[],'comment_pages':[],'reply_pages':[], 'responses':[], 'independent_suggest_words':[], 'actions':[], 'manual_intervention':False}
         stop=asyncio.Event()
@@ -94,7 +102,7 @@ class GuestBrowser:
                 body=await resp.body()
                 record.update(self.store.save_raw(body))
                 data=json.loads(body)
-                risk=ADAPTER.detect_risk_control(data)
+                risk=detect_risk_control(data)
                 if risk: row['restriction']=risk; stop.set()
                 detail=data.get('aweme_detail') or {}
                 if str(detail.get('aweme_id'))==video_id:
