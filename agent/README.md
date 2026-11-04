@@ -91,15 +91,15 @@ is the reason the check compares parameter surfaces and not just tool names.
 embedding service. Documents are tokenised into CJK bigrams (whole words for
 Latin text), scored by BM25 (k1=1.5, b=0.75), combined with a hashed feature
 vector (512 dimensions, blake2b sign trick, cosine) and a phrase-containment
-bonus, then filtered by `MIN_COSINE`. Every hit carries its source id, and
-`assert_cited()` refuses a sentence whose citation is not among the retrieved
-ids.
+bonus, then filtered by `MIN_COSINE`. Every hit carries its source id.
 
 The method string returned with results says what it is: a lexical/feature
 baseline, not a trained embedding. It is cheap, offline and inspectable; it is
-not a claim to beat a real embedding model. 17 tests cover tokenisation,
-ranking, the single-character query edge case, hash collisions below the cosine
-floor, and citation enforcement.
+not a claim to beat a real embedding model. `assert_cited()` checks that each
+citation id exists in the corpus — it proves the source is real, not that the
+source supports the sentence. 17 tests cover tokenisation, ranking, the
+single-character query edge case, hash collisions below the cosine floor, and
+citation enforcement.
 
 ## What this is not
 
