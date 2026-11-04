@@ -1,0 +1,179 @@
+............................[10/20/26 23:29:09] ERROR    Tool 'submit_collection' raised an   server.py:455
+                             unexpected exception                              
+                             +- Traceback (most recent call las-+              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\mcp\se |              
+                             | rver\mcpserver\tools\base.py:179 |              
+                             |  in run                          |              
+                             |                                  |              
+                             |   176                     return |              
+                             |       else resolved              |              
+                             |   177                 pass_direc |              
+                             |   178                            |              
+                             | > 179             result = await |              
+                             |       pass_directly)             |              
+                             |   180                            |              
+                             |   181             # Registration |              
+                             |   182             # a body that  |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\mcp\se |              
+                             | rver\mcpserver\utilities\func_me |              
+                             | tadata.py:164 in call_fn         |              
+                             |                                  |              
+                             |   161         kwargs = arguments |              
+                             |   162         if fn_is_async:    |              
+                             |   163             return await f |              
+                             | > 164         return await anyio |              
+                             |   165                            |              
+                             |   166     @deprecated(           |              
+                             |   167         "FuncMetadata.call |              
+                             |       3.0; "                     |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\anyio\ |              
+                             | to_thread.py:65 in run_sync      |              
+                             |                                  |              
+                             |   62             stacklevel=2,   |              
+                             |   63         )                   |              
+                             |   64                             |              
+                             | > 65     return await get_async_ |              
+                             |   66         func, args, abandon |              
+                             |   67     )                       |              
+                             |   68                             |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\anyio\ |              
+                             | _backends\_asyncio.py:2706 in    |              
+                             | run_sync_in_worker_thread        |              
+                             |                                  |              
+                             |   2703                     worke |              
+                             |   2704                           |              
+                             |   2705                 worker.qu |              
+                             | > 2706                 return aw |              
+                             |   2707                           |              
+                             |   2708     @classmethod          |              
+                             |   2709     def check_cancelled(c |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\anyio\ |              
+                             | _backends\_asyncio.py:1100 in    |              
+                             | run                              |              
+                             |                                  |              
+                             |   1097                     excep |              
+                             |   1098                     threa |              
+                             |   1099                     try:  |              
+                             | > 1100                         r |              
+                             |   1101                     excep |              
+                             |   1102                         e |              
+                             |   1103                     final |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\dycollector\mcp_server.py:12   |              
+                             | in submit_collection             |              
+                             |                                  |              
+                             |    9 @server.tool()              |              
+                             |   10 def submit_collection(video |              
+                             |      bool=False, source: str='br |              
+                             |   11     """Queue a public video |              
+                             | > 12     s=service(); return     |              
+                             |      s.public_job(s.submit(video |              
+                             |   13                             |              
+                             |   14 @server.tool()              |              
+                             |   15 def submit_search(keyword:  |              
+                             |      -> dict:                    |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\dycollector\service.py:19 in   |              
+                             | submit                           |              
+                             |                                  |              
+                             |    16         self.store=Store(u |              
+                             |    17                            |              
+                             |    18     def submit(self,ref,op |              
+                             | >  19         vid=parse_video_re |              
+                             |    20         supplied=options o |              
+                             |    21         if set(supplied)-{ |              
+                             |       raise ValueError('Unknown  |              
+                             |    22         options={'max_page |              
+                             |       *supplied}                 |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\dycollector\browser.py:15 in   |              
+                             | parse_video_ref                  |              
+                             |                                  |              
+                             |    12         return ref         |              
+                             |    13     u = urlsplit(ref)      |              
+                             |    14     if u.scheme != 'https' |              
+                             |       'jingxuan.douyin.com'} or  |              
+                             | >  15         raise ValueError(' |              
+                             |       accepted')                 |              
+                             |    16     match = re.fullmatch(r |              
+                             |    17     if not match:          |              
+                             |    18         raise ValueError(' |              
+                             |       canonical video URL')      |              
+                             +----------------------------------+              
+                             ValueError: Only HTTPS public Douyin              
+                             video URLs or numeric IDs are                     
+                             accepted                                          
+                                                                               
+                             The above exception was the direct                
+                             cause of the following exception:                 
+                                                                               
+                             +- Traceback (most recent call las-+              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\mcp\se |              
+                             | rver\mcpserver\server.py:442 in  |              
+                             | _handle_call_tool                |              
+                             |                                  |              
+                             |    439     ) -> CallToolResult | |              
+                             |    440         context = Context |              
+                             |        subscriptions=self._subsc |              
+                             |    441         try:              |              
+                             | >  442             return await  |              
+                             |    443         except MCPError:  |              
+                             |    444             raise         |              
+                             |    445         except Exception  |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\mcp\se |              
+                             | rver\mcpserver\server.py:548 in  |              
+                             | call_tool                        |              
+                             |                                  |              
+                             |    545         """               |              
+                             |    546         if context is Non |              
+                             |    547             context = Con |              
+                             | >  548         return await self |              
+                             |        convert_result=True)      |              
+                             |    549                           |              
+                             |    550     async def list_resour |              
+                             |    551         """List all avail |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\mcp\se |              
+                             | rver\mcpserver\tools\tool_manage |              
+                             | r.py:87 in call_tool             |              
+                             |                                  |              
+                             |   84         if not tool:        |              
+                             |   85             raise ToolError |              
+                             |   86                             |              
+                             | > 87         return await tool.r |              
+                             |   88                             |              
+                             |                                  |              
+                             | D:\���\��Ŀ\���ݹ���̨\collecto |              
+                             | r\.venv\Lib\site-packages\mcp\se |              
+                             | rver\mcpserver\tools\base.py:213 |              
+                             |  in run                          |              
+                             |                                  |              
+                             |   210             raise ToolErro |              
+                             |   211         except Exception a |              
+                             |   212             # A crash: the |              
+                             | > 213             raise Unexpect |              
+                             |   214                            |              
+                             +----------------------------------+              
+                             UnexpectedToolError: Error executing              
+                             tool submit_collection                            
+..................................
+----------------------------------------------------------------------
+Ran 62 tests in 5.572s
+
+OK
