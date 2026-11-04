@@ -36,7 +36,7 @@ jobs:
           cd agent
           pip install -e .
           pip install -e '.[langchain]'
-      - name: Unit tests (36)
+      - name: Unit tests (37)
         run: cd agent && python -m unittest discover -s tests -v
       - name: Demo pipeline against scripted model
         run: |
