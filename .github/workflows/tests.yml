@@ -62,7 +62,7 @@ jobs:
         run: |
           pip install -e agent
           pip install -e bench
-      - name: Unit tests (22)
+      - name: Unit tests (34)
         run: cd bench && python -m unittest discover -s tests -v
       - name: Run the shipped case set end to end
         run: |
@@ -75,5 +75,6 @@ jobs:
           assert s['cases'] == 8, s['cases']
           assert s['success_rate'] >= 0.875, s['success_rate']
           assert s['quality_mean'] is None, 'quality must stay unscored without rubrics'
+          assert pathlib.Path('/tmp/bench-out/attribution.md').is_file()
           print('benchmark ok:', s['passed'], '/', s['cases'])
           PY

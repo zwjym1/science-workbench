@@ -69,6 +69,35 @@ Per-case regression and fix lists, plus deltas for success rate, quality, latenc
 prompt tokens and render seconds. `runner.py` caches each finished case in its own
 directory, so an interrupted batch resumes and an unchanged case is not re-run.
 
+## Failure attribution
+
+`clipbench run` also writes `attribution.md`, and `clipbench attribute` can be
+run on any earlier result file. It reads the trace and assigns each failure one
+of five buckets, with the signal that fired:
+
+| bucket | signal it comes from |
+|---|---|
+| `environment` | ffmpeg / filesystem / network faults |
+| `argument_generation` | the tool rejected the arguments |
+| `tool_selection` | the model named a tool that does not exist |
+| `context_understanding` | repeated failure right after history compaction |
+| `planning` | kept choosing a doomed action, or ran out of steps, or clean tools that missed the constraints |
+
+Two properties worth keeping:
+
+**Passing runs are excluded, not counted as `none`.** A distribution diluted by
+successes says nothing about failure modes. The report states how many cases
+passed and gives shares out of failures only.
+
+**`unclassified` is a real answer.** When a failure matches no rule it is
+reported as such instead of being forced into the nearest bucket. An attribution
+layer that always finds a category hides exactly the cases the taxonomy does not
+cover yet.
+
+Precedence is fixed: `environment` outranks everything downstream of it, because
+a missing ffmpeg explains every error that follows and attributing those to
+planning would send you fixing the wrong layer.
+
 ## What is still missing
 
 Rubric scoring is the next milestone. Until a human has labelled ten cases and a

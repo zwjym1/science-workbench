@@ -53,11 +53,16 @@ def cmd_run(args) -> int:
 
     meta = {'label': args.label,
             'model': policy.LABEL if args.client == 'scripted' else args.model_hint,
-            'case_file': str(args.cases)}
+            'case_file': str(args.cases), 'workdir': str(Path(args.workdir).resolve())}
     out = Path(args.out)
     write_json(out / 'results.json', runs, meta)
     write_markdown(out / 'report.md', runs, meta)
-    print(f'\nwrote {out / "results.json"} and {out / "report.md"}')
+
+    from .attribution import attribute_results, render_report as render_attr
+    (out / 'attribution.md').write_text(
+        render_attr(attribute_results(out / 'results.json')), encoding='utf-8')
+
+    print(f'\nwrote results.json, report.md and attribution.md under {out}')
     return 0
 
 
@@ -69,6 +74,18 @@ def cmd_compare(args) -> int:
     baseline, candidate = load(Path(args.baseline)), load(Path(args.candidate))
     meta = {'baseline': args.baseline, 'candidate': args.candidate}
     text = render_comparison(baseline, candidate, meta)
+    print(text)
+    if args.out:
+        Path(args.out).write_text(text, encoding='utf-8')
+        print(f'\nwrote {args.out}')
+    return 0
+
+
+def cmd_attribute(args) -> int:
+    from .attribution import attribute_results, render_report
+
+    items = attribute_results(Path(args.results))
+    text = render_report(items, examples=args.examples)
     print(text)
     if args.out:
         Path(args.out).write_text(text, encoding='utf-8')
@@ -98,6 +115,12 @@ def main(argv: list[str] | None = None) -> int:
     cmp.add_argument('candidate')
     cmp.add_argument('--out', default='')
     cmp.set_defaults(func=cmd_compare)
+
+    attr = sub.add_parser('attribute', help='classify failures from traces')
+    attr.add_argument('results')
+    attr.add_argument('--out', default='')
+    attr.add_argument('--examples', type=int, default=3)
+    attr.set_defaults(func=cmd_attribute)
 
     args = parser.parse_args(argv)
     return args.func(args)
