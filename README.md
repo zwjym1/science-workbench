@@ -16,10 +16,11 @@ Next.js 控制台，以及配套的 unittest/pytest 测试集。
   第二次运行 `attempts=0, reused=5`。
 - `bench/`：批量评测。8 个带约束的 case、四个指标（任务成功率 / 质量分 / 时延 / 成本）、
   规则层校验（时长、镜头数、引用覆盖、素材数量、ffprobe 回读、时延上限）、按 case 断点续跑、
-  两次运行的逐 case 回归对比。**22 项 unittest**。质量分在没有人打好 Rubric 之前一律留空，
-  不把未评分的 case 平均成"质量"。
+  两次运行的逐 case 回归对比，以及从 trace 读出的失败归因（五类：环境 / 参数生成 / 工具选择 /
+  上下文 / 规划，无法归类时如实标 unclassified）。**34 项 unittest**。质量分在没有人打好 Rubric
+  之前一律留空，不把未评分的 case 平均成"质量"。
 - `compose.yaml`：db / backend / worker / frontend / caddy 四个服务一键起。
-- **合计 136 项自动化测试**，CI 四个 job（collector / backend / agent / bench）每次 push 全跑。
+- **合计 148 项自动化测试**，CI 四个 job（collector / backend / agent / bench）每次 push 全跑。
 
 ## 诚实边界（不宣称已完成）
 
