@@ -9,7 +9,13 @@ Next.js 控制台，以及配套的 unittest/pytest 测试集。
   结果标准化与评论去重/父子关系还原、原始证据哈希、来源暂停与恢复。
   **62 项 unittest 全绿，约 8 秒**（含真实 MCP 子进程握手、发现、提交与非法 URL 负例）。
 - `backend/`：FastAPI + SQLAlchemy 2 + Alembic 迁移 + SQLite/PostgreSQL 双方言，15 项 pytest 用例。
+- `agent/`：自写的 ReAct 循环（规划→行动→观察→重规划），5 个 Function Calling 工具，
+  按 `sha256(tool, args)` 做内容寻址的产物复用，失败即观察、由模型重新规划而不盲目重试；
+  附带一份等价的 LangChain 实现做对照，并有参数面一致性测试。**36 项 unittest**，
+  `clipagent demo` 在干净环境跑完整条链路：4 镜头、40.000 秒、320×180 的 h264，
+  第二次运行 `attempts=0, reused=5`。
 - `compose.yaml`：db / backend / worker / frontend / caddy 四个服务一键起。
+- **合计 113 项自动化测试**，CI 三个 job（collector / backend / agent）每次 push 全跑。
 
 ## 诚实边界（不宣称已完成）
 
@@ -30,3 +36,14 @@ pip install -r backend/requirements.txt
 cp .env.example .env          # 自行填写 ADMIN_PASSWORD / SESSION_SECRET
 cd collector && python -m unittest discover -s tests
 ```
+
+Agent 单独一个包，不依赖上面任何一个：
+
+```bash
+cd agent && pip install -e . && python -m unittest discover -s tests
+clipagent demo --workdir /tmp/clipagent-demo     # 不需要模型 key
+```
+
+`clipagent` 的 `synthesize_tts` 在未配置语音引擎时返回 `unavailable` 并写一条等长静音轨：
+时长是真的、声音不是，状态如实标注。`render_and_check` 用 ffprobe 回读时长与分辨率再判定，
+没有 ffmpeg 时同样返回 `unavailable`，不会伪造成功。

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clipagent"
+version = "0.1.0"
+description = "ReAct agent harness for a short science-explainer video pipeline"
+requires-python = ">=3.12,<3.14"
+dependencies = []
+
+[project.optional-dependencies]
+# Only needed to run the side-by-side LangChain implementation.
+langchain = ["langchain>=0.3", "langchain-core>=0.3"]
+
+[project.scripts]
+clipagent = "clipagent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["clipagent*"]

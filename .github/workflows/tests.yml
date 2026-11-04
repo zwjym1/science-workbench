@@ -24,3 +24,30 @@ jobs:
         with: { python-version: '3.12' }
       - run: pip install -r backend/requirements.txt
       - run: cd backend && python -m pytest tests -q
+
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Install agent
+        run: |
+          cd agent
+          pip install -e .
+          pip install -e '.[langchain]'
+      - name: Unit tests (36)
+        run: cd agent && python -m unittest discover -s tests -v
+      - name: Demo pipeline against scripted model
+        run: |
+          cd agent
+          clipagent demo --workdir /tmp/clipagent-ci
+          python - <<'PY'
+          import json, pathlib
+          runs = list(pathlib.Path('/tmp/clipagent-ci/runs').glob('*.jsonl'))
+          assert runs, 'no trace written'
+          rows = [json.loads(l) for l in runs[0].read_text(encoding='utf-8').splitlines() if l.strip()]
+          kinds = {r['kind'] for r in rows}
+          assert {'plan', 'tool', 'final'} <= kinds, kinds
+          print('trace ok:', len(rows), 'entries')
+          PY

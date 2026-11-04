@@ -20,3 +20,6 @@ tsconfig.tsbuildinfo
 *.tsbuildinfo
 
 .venv-ci/
+
+samples/clipagent-demo/
+agent/*.egg-info/
