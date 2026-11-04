@@ -18,3 +18,5 @@ research/
 handoff/
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+
+.venv-ci/

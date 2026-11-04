@@ -12,7 +12,7 @@ jobs:
       - name: Install collector deps
         run: |
           cd collector
-          pip install -e . || pip install -r requirements-lock.txt
+          pip install -e .
       - name: Run 62 unit tests
         run: cd collector && python -m unittest discover -s tests -v
 

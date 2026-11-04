@@ -67,13 +67,18 @@ $env:COLLECTOR_DATA_DIR='D:/collector-data'
 {
   "mcpServers": {
     "douyinCollector": {
-      "command": "D:/编程/项目/导演工作台/collector/.venv/Scripts/python.exe",
+      "command": "<项目绝对路径>/collector/.venv/bin/python",
       "args": ["-m", "dycollector.mcp_server"],
-      "env": {"COLLECTOR_DATA_DIR": "D:/collector-data"}
+      "env": {"COLLECTOR_DATA_DIR": "<可写数据目录>"}
     }
   }
 }
 ```
+
+Windows 下解释器路径改为 `collector\\.venv\\Scripts\\python.exe`。采集与评测部分不需要浏览器：
+归一化、存储、MCP 与测试只依赖 `pip install -e .`。实时抓取需要外部 CDP 后端，用
+`DYCOLLECTOR_BROWSER_BACKEND` 指向包含 `browser_rpc` 的目录；未配置时相关调用明确报错，不静默降级。
+历史回放读到的证据文件在仓库外，用 `DYCOLLECTOR_EVIDENCE` 指向批次 summary。
 
 worker终端必须使用相同COLLECTOR_DATA_DIR和数据库环境变量，否则会查询不同任务库。也可 `./collector/start.ps1 -Mode mcp` 手动启动，`-Mode worker`执行当前队列最多20项，队列空时退出，不是常驻轮询。
 
