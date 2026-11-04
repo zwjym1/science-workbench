@@ -1,0 +1,1 @@
+"""Independent guest capture normalization."""
