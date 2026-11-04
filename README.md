@@ -1,0 +1,31 @@
+# science-workbench — AI 科普内容采集与自动化评测工作台
+
+一个面向科普视频生产的 Agent 工作台：公开数据采集与规范化管道、FastAPI 服务端与后台 worker、
+Next.js 控制台，以及配套的 unittest/pytest 测试集。
+
+## 我能说清楚的部分（面试可现场演示）
+
+- `collector/`：抖音公开内容采集管道。6 个 stdio MCP 工具、独立 worker 领任务、按视频与采集选项做缓存命中、
+  结果标准化与评论去重/父子关系还原、原始证据哈希、来源暂停与恢复。
+  **62 项 unittest 全绿，约 8 秒**（含真实 MCP 子进程握手、发现、提交与非法 URL 负例）。
+- `backend/`：FastAPI + SQLAlchemy 2 + Alembic 迁移 + SQLite/PostgreSQL 双方言，15 项 pytest 用例。
+- `compose.yaml`：db / backend / worker / frontend / caddy 四个服务一键起。
+
+## 诚实边界（不宣称已完成）
+
+- PostgreSQL 迁移脚本已提供，但**尚未在真实 PG 实例上验证**，SQLite 测试不能替代它。
+- OCR 返回 unavailable；短链接明确拒绝，仅支持规范 HTTPS 视频链接/ID。
+- 分析模型客户端未做真实联调；公网 HTTPS 与认证未开放。
+- 数据规模：截至 2026-10-20 为 21 条视频、129 条一级评论、50 条合并回复（去除 3 条重复），
+  其中 20 条来自标记 `replay=true` 的历史回放，不是实时采集。
+- 合规硬约束写在代码里而非文档：不使用个人账号与 Cookie（检测到常见个人登录 Cookie 名称即拒绝启动）、
+  不使用第三方付费数据 API、不绕过验证码与访问限制、缺失字段不得由模型补造。
+
+## 运行
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -r backend/requirements.txt
+cp .env.example .env          # 自行填写 ADMIN_PASSWORD / SESSION_SECRET
+cd collector && python -m unittest discover -s tests
+```
