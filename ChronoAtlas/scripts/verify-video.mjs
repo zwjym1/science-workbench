@@ -1,0 +1,11 @@
+import {spawnSync} from 'node:child_process';
+import {writeFileSync} from 'node:fs';
+const file=process.argv[2]||'out/hexi-corridor.mp4';
+const probe=spawnSync('ffprobe',['-v','error','-show_format','-show_streams','-of','json',file],{encoding:'utf8'});
+if(probe.status!==0)throw Error(probe.stderr);
+const result=JSON.parse(probe.stdout),video=result.streams.find(s=>s.codec_type==='video');
+if(!video||video.width!==1280||video.height!==720||Math.abs(Number(result.format.duration)-30)>.1||video.codec_name!=='h264')throw Error('Video acceptance failed');
+const decoded=spawnSync('ffmpeg',['-v','error','-i',file,'-f','null','-'],{encoding:'utf8'});
+if(decoded.status!==0)throw Error(decoded.stderr);
+writeFileSync('out/verification.json',JSON.stringify({verifiedAt:new Date().toISOString(),file,fullDecode:true,...result},null,2));
+console.log('PASS: H.264, 1280×720, 30 seconds; all frames decoded.');

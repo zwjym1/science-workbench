@@ -1,0 +1,32 @@
+{
+  "name": "chronoatlas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "studio": "remotion studio src/remotion.tsx",
+    "render": "remotion render src/remotion.tsx HexiCorridor out/hexi-corridor.mp4 --codec=h264 --concurrency=2",
+    "catalog": "node scripts/catalog.mjs",
+    "server": "node server/index.mjs",
+    "verify:video": "node scripts/verify-video.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.537",
+    "@remotion/player": "4.0.537",
+    "remotion": "4.0.537",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "d3-geo": "3.1.1"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "3.1.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.1",
+    "typescript": "~5.9.3",
+    "vite": "8.3.4"
+  }
+}

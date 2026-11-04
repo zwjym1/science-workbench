@@ -1,0 +1,22 @@
+{
+  "adapter": "standard-json",
+  "is_demo": true,
+  "data": {
+    "videos": [{
+      "platform": "demo",
+      "external_id": "demo-sky-001",
+      "title": "【模拟数据】天空为什么是蓝色？",
+      "source_url": "https://example.com/demo/sky",
+      "collected_at": "2026-10-20T08:00:00+08:00",
+      "published_at": null,
+      "content": "这是测试采集接口的虚构内容，不来自抖音。",
+      "metrics": {"views": null, "likes": null},
+      "comments": [
+        {"external_id": "demo-c1", "text": "【模拟评论】那日落为什么是红色？", "likes": null},
+        {"external_id": "demo-c2", "text": "【模拟评论】能用三维动画解释散射吗？", "likes": null}
+      ],
+      "related_searches": ["【模拟搜索】瑞利散射"],
+      "tags": ["模拟数据", "光学"]
+    }]
+  }
+}

@@ -13,3 +13,6 @@ research/
 .pytest_cache/
 *.egg-info/
 .coverage
+
+# 交接打包件内含真实采集样本（评论/回复原文），不公开发布
+handoff/
