@@ -89,27 +89,60 @@ class RejectedCompletenessTests(unittest.TestCase):
 
 
 class ReplayTests(unittest.TestCase):
+    """Replay runs on a synthetic batch, not on the private evidence dir.
+
+    The real batch summaries are deliberately not published, so the test builds
+    its own capture-shaped batch and asserts the invariants that matter: the
+    replay flag, totals recomputed from normalized rows, provenance carrying the
+    batch timestamp, the source file staying byte-identical, and a second write
+    to the same artifact refusing to overwrite.
+    """
+
+    def _batch(self, folder):
+        rows = []
+        for index in range(3):
+            video = f'10{index}'
+            rows.append({
+                'video_id': video,
+                'detail': {'aweme_id': video, 'desc': f'row {index}'},
+                'comment_pages': [page([comment(f'c{index}-1', video),
+                                        comment(f'c{index}-2', video)], video=video)],
+                'reply_pages': [page([comment(f'r{index}', video=video, parent=f'c{index}-1')],
+                                     video=video, parent=f'c{index}-1')],
+            })
+        source = folder / 'batch.json'
+        source.write_text(json.dumps({'ended_at': '2026-10-20T09:00:00+00:00', 'rows': rows}),
+                          encoding='utf-8')
+        return source
+
     def test_historical_replay_has_origin_and_preserves_evidence(self):
-        root = Path(__file__).resolve().parents[2]
-        source = root / 'research/douyin-validation/evidence/batch20/summary.json'
-        before = source.read_bytes()
+        replay = Path(__file__).resolve().parents[1] / 'replay.py'
         with tempfile.TemporaryDirectory() as temp:
-            output = Path(temp) / 'report.json'
-            result = subprocess.run([sys.executable,str(root / 'collector/replay.py'),'--output',str(output)],capture_output=True,text=True)
-            self.assertEqual(result.returncode,0,result.stderr)
+            folder = Path(temp)
+            source = self._batch(folder)
+            before = source.read_bytes()
+            output = folder / 'report.json'
+            result = subprocess.run([sys.executable, str(replay), '--source', str(source),
+                                     '--output', str(output)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
             report = json.loads(output.read_text(encoding='utf-8'))
-            self.assertIs(report['replay'],True)
-            self.assertEqual(report['totals']['videos'],20)
-            self.assertEqual(report['totals']['unique_top_level_comments'],129)
-            self.assertEqual(report['totals']['unique_replies'],50)
-            self.assertEqual(report['source_collected_at'],json.loads(before)['ended_at'])
+            self.assertIs(report['replay'], True)
+            self.assertEqual(report['totals']['videos'], 3)
+            self.assertEqual(report['totals']['unique_top_level_comments'], 6)
+            self.assertEqual(report['totals']['unique_replies'], 3)
+            self.assertEqual(report['source_collected_at'], '2026-10-20T09:00:00+00:00')
             for row in report['rows']:
-                self.assertIs(row['replay'],True)
+                self.assertIs(row['replay'], True)
+                self.assertEqual(row['provenance']['source_batch_ended_at'],
+                                 '2026-10-20T09:00:00+00:00')
                 roots = {c['cid'] for c in row['comments']['items']}
-                self.assertTrue(all(r['parent_cid'] in roots and r['video_id'] == row['video_id'] for r in row['replies']['items']))
-            again = subprocess.run([sys.executable,str(root / 'collector/replay.py'),'--output',str(output)],capture_output=True,text=True)
-            self.assertNotEqual(again.returncode,0)
-        self.assertEqual(source.read_bytes(),before)
+                self.assertTrue(all(r['parent_cid'] in roots
+                                    and r['video_id'] == row['video_id']
+                                    for r in row['replies']['items']))
+            again = subprocess.run([sys.executable, str(replay), '--source', str(source),
+                                    '--output', str(output)], capture_output=True, text=True)
+            self.assertNotEqual(again.returncode, 0)
+            self.assertEqual(source.read_bytes(), before)
 
 
 
