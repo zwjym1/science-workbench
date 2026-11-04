@@ -1,0 +1,85 @@
+name: science-workbench
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: workbench
+      POSTGRES_DB: workbench
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workbench -d workbench"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      ANALYSIS_PROVIDER: ${ANALYSIS_PROVIDER:-openai-compatible}
+      ANALYSIS_BASE_URL: ${ANALYSIS_BASE_URL:-}
+      ANALYSIS_MODEL: ${ANALYSIS_MODEL:-}
+      ANALYSIS_API_KEY: ${ANALYSIS_API_KEY:-}
+      ANALYSIS_INPUT_PRICE_PER_MILLION: ${ANALYSIS_INPUT_PRICE_PER_MILLION:-}
+      ANALYSIS_OUTPUT_PRICE_PER_MILLION: ${ANALYSIS_OUTPUT_PRICE_PER_MILLION:-}
+      ANALYSIS_BUDGET_PER_JOB: ${ANALYSIS_BUDGET_PER_JOB:-0.25}
+      ANALYSIS_DAILY_BUDGET: ${ANALYSIS_DAILY_BUDGET:-2}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  worker:
+    build: ./backend
+    command: ["python", "-m", "app.worker"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET}
+      ANALYSIS_PROVIDER: ${ANALYSIS_PROVIDER:-openai-compatible}
+      ANALYSIS_BASE_URL: ${ANALYSIS_BASE_URL:-}
+      ANALYSIS_MODEL: ${ANALYSIS_MODEL:-}
+      ANALYSIS_API_KEY: ${ANALYSIS_API_KEY:-}
+      ANALYSIS_INPUT_PRICE_PER_MILLION: ${ANALYSIS_INPUT_PRICE_PER_MILLION:-}
+      ANALYSIS_OUTPUT_PRICE_PER_MILLION: ${ANALYSIS_OUTPUT_PRICE_PER_MILLION:-}
+      ANALYSIS_BUDGET_PER_JOB: ${ANALYSIS_BUDGET_PER_JOB:-0.25}
+      ANALYSIS_DAILY_BUDGET: ${ANALYSIS_DAILY_BUDGET:-2}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
