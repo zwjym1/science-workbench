@@ -121,7 +121,7 @@ def cmd_score(args) -> int:
     """Score finished runs with the judge; emits a human/judge score sheet."""
     import csv
     from .case import load_cases
-    from .judge import LLMJudge, RubricJudge
+    from .judge import CodexJudge, LLMJudge, RubricJudge
 
     results = json.loads(Path(args.results).read_text(encoding='utf-8'))
     runs = results['cases']
@@ -129,13 +129,16 @@ def cmd_score(args) -> int:
 
     if args.judge == 'none':
         judge, model = None, 'not run'
+    elif args.judge == 'codex':
+        judge = CodexJudge(Path(args.workdir) / '.judge')
+        model = f'codex-cli:{judge.model}'
     elif args.judge == 'rubric':
         judge, model = RubricJudge(), 'rubric-standin (not a quality judgement)'
     else:
         client, model = _judge_client()
         if client is None:
             print('set JUDGE_BASE_URL/JUDGE_MODEL (or CLIPAGENT_*), '
-                  'or use --judge rubric/none', file=sys.stderr)
+                  'or use --judge codex (CLI) / rubric / none', file=sys.stderr)
             return 2
         judge = LLMJudge(client)
 
@@ -416,7 +419,7 @@ def main(argv: list[str] | None = None) -> int:
     score.add_argument('--results', default='.bench-out/results.json')
     score.add_argument('--workdir', default='.bench-work')
     score.add_argument('--cases', default=str(DEFAULT_CASES))
-    score.add_argument('--judge', choices=['llm', 'rubric', 'none'], default='llm')
+    score.add_argument('--judge', choices=['llm', 'codex', 'rubric', 'none'], default='llm')
     score.add_argument('--only', default='', help='comma separated case ids')
     score.add_argument('--out', default='.bench-out/judge-scores.csv')
     score.add_argument('--html', default='', help='write a human scoring page')

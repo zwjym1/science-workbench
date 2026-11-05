@@ -144,6 +144,15 @@ It judges cases that actually produced a script (known-failure cases have
 nothing to score), writes the judge column and leaves the human column blank.
 `--judge rubric` runs entirely offline and labels its output as a stand-in.
 
+When no API quota is left, `--judge codex` runs the same frozen prompt through
+the Codex CLI (`codex exec --output-schema`). The score records
+`source: codex:<model>`; a CLI run is not presented as an API run. On Windows
+the prompt must be sent as UTF-8 explicitly, otherwise Codex rejects stdin as
+invalid UTF-8.
+
+`--judge none` writes the same sheet with both columns blank, so a human can
+start rating before any judge is available.
+
 ## One case set, several models
 
 ```bash

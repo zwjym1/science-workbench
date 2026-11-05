@@ -16,7 +16,10 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shutil
+import subprocess
 from dataclasses import dataclass, field, asdict
+from pathlib import Path
 from typing import Protocol, Sequence
 
 JUDGE_PROMPT = """你是科普短视频的质量评审。只评价给定的四个维度，不要评价风格偏好。
@@ -125,6 +128,85 @@ class RubricJudge:
                      weighted=round(base, 3),
                      rationale='rule-derived stand-in, not a quality judgement',
                      source='rubric-standin')
+
+
+CODEX_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'narrative': {'type': 'number'},
+        'accuracy': {'type': 'number'},
+        'density': {'type': 'number'},
+        'constraint': {'type': 'number'},
+        'rationale': {'type': 'string'},
+    },
+    'required': ['narrative', 'accuracy', 'density', 'constraint', 'rationale'],
+    'additionalProperties': False,
+}
+
+
+def _codex_model() -> str:
+    try:
+        text = (Path.home() / '.codex' / 'config.toml').read_text(encoding='utf-8')
+    except OSError:
+        return 'unknown'
+    match = re.search(r'^model\s*=\s*"([^"]+)"', text, re.M)
+    return match.group(1) if match else 'unknown'
+
+
+class CodexJudge:
+    """Judge through the Codex CLI, for when no API quota is left.
+
+    Same frozen prompt and a JSON schema, so the output is parseable without
+    scraping the CLI banner. The model and prompt hash are recorded with every
+    score; a CLI run is not silently equated with an API run.
+    """
+
+    def __init__(self, workdir: Path):
+        self.exe = shutil.which('codex')
+        if not self.exe:
+            raise RuntimeError('codex CLI not found on PATH')
+        self.dir = Path(workdir)
+        self.dir.mkdir(parents=True, exist_ok=True)
+        self.schema = self.dir / 'judge-schema.json'
+        self.schema.write_text(json.dumps(CODEX_SCHEMA), encoding='utf-8')
+        self.out = self.dir / 'judge-out.json'
+        self.model = _codex_model()
+        self.weights = _weights(None)
+
+    def score(self, case_payload: dict) -> Score:
+        prompt = JUDGE_PROMPT + '\n\n待评内容：\n' + json.dumps(
+            case_payload, ensure_ascii=False, indent=2)
+        if self.out.exists():
+            self.out.unlink()
+        command = [self.exe, 'exec', '--skip-git-repo-check',
+                   '-C', str(self.dir), '-s', 'read-only',
+                   '--output-schema', str(self.schema),
+                   '-o', str(self.out), '-']
+        try:
+            # Codex reads stdin as UTF-8; Windows' default text encoding is the
+            # ANSI code page, so the prompt must be encoded explicitly.
+            subprocess.run(command, input=prompt, text=True, encoding='utf-8',
+                           capture_output=True, timeout=300, check=False)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            return Score(case_id=str(case_payload.get('case_id', '')), dimensions={},
+                         weighted=0.0, rationale=f'codex_invocation_failed: {exc}'[:200],
+                         source='codex')
+        if not self.out.is_file():
+            return Score(case_id=str(case_payload.get('case_id', '')), dimensions={},
+                         weighted=0.0, rationale='codex_wrote_no_output',
+                         source='codex')
+        try:
+            data = json.loads(self.out.read_text(encoding='utf-8'))
+        except (OSError, json.JSONDecodeError) as exc:
+            return Score(case_id=str(case_payload.get('case_id', '')), dimensions={},
+                         weighted=0.0, rationale=f'unparseable_codex_output: {exc}'[:200],
+                         source='codex')
+        dims = {k: _clamp(data.get(k, 0) or 0) for k in DIMENSIONS}
+        weighted = sum(dims[k] * self.weights[k] for k in DIMENSIONS)
+        return Score(case_id=str(case_payload.get('case_id', '')), dimensions=dims,
+                     weighted=round(weighted, 3),
+                     rationale=str(data.get('rationale', ''))[:200],
+                     source=f'codex:{self.model}')
 
 
 # --------------------------------------------------------------------------
