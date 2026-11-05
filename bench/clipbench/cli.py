@@ -127,19 +127,25 @@ def cmd_score(args) -> int:
     runs = results['cases']
     cases = {c.id: c for c in load_cases(Path(args.cases))}
 
-    if args.judge == 'rubric':
+    if args.judge == 'none':
+        judge, model = None, 'not run'
+    elif args.judge == 'rubric':
         judge, model = RubricJudge(), 'rubric-standin (not a quality judgement)'
     else:
         client, model = _judge_client()
         if client is None:
             print('set JUDGE_BASE_URL/JUDGE_MODEL (or CLIPAGENT_*), '
-                  'or use --judge rubric for an offline dry run', file=sys.stderr)
+                  'or use --judge rubric/none', file=sys.stderr)
             return 2
         judge = LLMJudge(client)
 
+    wanted = {c.strip() for c in (getattr(args, 'only', '') or '').split(',')
+              if c.strip()}
     rows, detail = [], []
     payloads = []
     for run in runs:
+        if wanted and run['case_id'] not in wanted:
+            continue
         case = cases.get(run['case_id'])
         script = _latest_artifact(Path(args.workdir), run['case_id'], 'write_script')
         if not case or not script:
@@ -153,6 +159,10 @@ def cmd_score(args) -> int:
             'shots': (board.get('shots') or [])[:12],
         }
         payloads.append(payload)
+        if judge is None:
+            rows.append({'case_id': run['case_id'], 'human_score_1to5': '',
+                         'judge_score_1to5': '', 'note': ''})
+            continue
         score = judge.score(payload)
         rows.append({'case_id': run['case_id'],
                      'human_score_1to5': '',
@@ -173,6 +183,12 @@ def cmd_score(args) -> int:
     out.with_suffix('.json').write_text(
         json.dumps({'model': model, 'scores': detail}, ensure_ascii=False, indent=2),
         encoding='utf-8')
+    if judge is None:
+        print(f'wrote {len(rows)} rows with both score columns blank (no judge run)')
+    else:
+        mean = sum(r['judge_score_1to5'] for r in rows) / len(rows)
+        print(f'scored {len(rows)} cases with {model}; judge mean {mean:.2f}/5')
+    print(f'wrote {out} and {out.with_suffix(".json")}')
     if getattr(args, 'html', ''):
         from html import escape
         blocks = []
@@ -184,12 +200,16 @@ def cmd_score(args) -> int:
                 f"<li>{escape(str(s.get('beat', '')))}：{escape(str(s.get('text', '')))} "
                 f"<em>[{escape(str(s.get('citation') or '无引用'))}]</em></li>"
                 for s in payload['sentences'])
+            shots = '、'.join(
+                f"{escape(str(s.get('index')))}:{escape(str(s.get('asset_id') or '无素材'))}"
+                for s in payload['shots'])
             blocks.append(
                 f"<section><h2>{escape(payload['case_id'])}</h2>"
                 f"<p class='task'>{escape(payload['task'])}</p>"
                 f"<p>约束：{escape(json.dumps(payload['constraints'], ensure_ascii=False))}</p>"
                 f"<p>规则检查：{checks}</p><ol>{sentences}</ol>"
-                f"<p class='hint'>看完这一条，回到 CSV 的 human_score_1to5 列打 1-5 分</p></section>")
+                f"<p class='hint'>镜头/素材：{shots or '—'}</p>"
+                f"<p class='hint'>看完这一条，到 CSV 的 human_score_1to5 列打 1-5 分</p></section>")
         page = (
             '<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
             '<title>人工评分表</title><style>'
@@ -198,15 +218,20 @@ def cmd_score(args) -> int:
             'section{border-bottom:1px solid #ddd;padding:16px 0}'
             '.task{color:#333}.hint{color:#888;font-size:12px}'
             '.ok{color:#0a7;margin-right:8px}.bad{color:#c33;margin-right:8px}'
+            'table{border-collapse:collapse}td,th{border:1px solid #ddd;padding:4px 8px}'
             '</style><h1>人工评分表（1-5 分）</h1>'
-            '<p>只评叙事连贯、信息密度与是否像一条能看的科普片；'
-            '时长和引用是否合规看下面的规则检查，不要重复计分。</p>'
+            '<p><b>只评脚本与分镜本身</b>，不要因为时长/引用合规就加分——那些规则层已经查过，'
+            '写在每条下面仅供你判断上下文。</p>'
+            '<table><tr><th>分</th><th>含义</th></tr>'
+            '<tr><td>5</td><td>叙事完整、事实准确、信息密度高，几乎不用改</td></tr>'
+            '<tr><td>4</td><td>整体可用，个别句子空泛或衔接生硬</td></tr>'
+            '<tr><td>3</td><td>能看懂，但像模板拼出来，缺少具体信息</td></tr>'
+            '<tr><td>2</td><td>有明显错误、重复或跑题，需要重写</td></tr>'
+            '<tr><td>1</td><td>不可用</td></tr></table>'
+            '<p>先独立打分，再看 judge 列；两者不一致正是 kappa 要量的东西。</p>'
             + ''.join(blocks) + '</html>')
         Path(args.html).write_text(page, encoding='utf-8')
         print(f'wrote {args.html} for human scoring')
-    mean = sum(r['judge_score_1to5'] for r in rows) / len(rows)
-    print(f'scored {len(rows)} cases with {model}; judge mean {mean:.2f}/5')
-    print(f'wrote {out} (human column blank) and {out.with_suffix(".json")}')
     return 0
 
 
@@ -391,7 +416,8 @@ def main(argv: list[str] | None = None) -> int:
     score.add_argument('--results', default='.bench-out/results.json')
     score.add_argument('--workdir', default='.bench-work')
     score.add_argument('--cases', default=str(DEFAULT_CASES))
-    score.add_argument('--judge', choices=['llm', 'rubric'], default='llm')
+    score.add_argument('--judge', choices=['llm', 'rubric', 'none'], default='llm')
+    score.add_argument('--only', default='', help='comma separated case ids')
     score.add_argument('--out', default='.bench-out/judge-scores.csv')
     score.add_argument('--html', default='', help='write a human scoring page')
     score.set_defaults(func=cmd_score)

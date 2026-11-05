@@ -189,6 +189,25 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue(lines[1].startswith('sc1,,'), lines[1])
         self.assertTrue((out / 'scores.json').is_file())
 
+    def test_score_without_a_judge_leaves_both_columns_blank(self):
+        import argparse
+        from clipbench.cli import cmd_score
+        c = case('sc2', duration_s=8, shots=2, must_cite=True)
+        runs = self._runner().run_all([c], progress=False)
+        out = self.root / 'out2'
+        write_json(out / 'results.json', runs, {})
+        cases_dir = Path(tempfile.mkdtemp())
+        (cases_dir / 'one.json').write_text(json.dumps([c.as_dict()]),
+                                            encoding='utf-8')
+        code = cmd_score(argparse.Namespace(
+            results=str(out / 'results.json'), workdir=str(self.root),
+            cases=str(cases_dir), judge='none', only='sc2',
+            out=str(out / 'scores.csv'), html=str(out / 'sheet.html')))
+        self.assertEqual(code, 0)
+        line = (out / 'scores.csv').read_text(encoding='utf-8').splitlines()[1]
+        self.assertEqual(line, 'sc2,,,')
+        self.assertIn('独立打分', (out / 'sheet.html').read_text(encoding='utf-8'))
+
     def test_rebuild_reads_case_files_back(self):
         import argparse
         from clipbench.cli import cmd_rebuild
